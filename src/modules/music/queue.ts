@@ -1,23 +1,30 @@
-type Song = {
+export type Song = {
   title: string;
   url: string;
   requestedBy: string;
-  file: string | null;
+  fileName: string | null;
 }
 export default class Queue {
   songs: Song[] = [];
   currentSong: Song | null = null;
 
   add(song: Song) {
-    this.songs.push(song);
+    if (!this.currentSong) {
+      this.currentSong = song;
+
+      return
+    }
+
+    this.songs.push(song);    
   }
 
   next() {
-    return this.songs.shift() ?? null
+    this.currentSong = this.songs.shift() ?? null
   }
 
   clear() {
     this.songs = [];
+    this.currentSong = null;
   }
 
   get length() {
