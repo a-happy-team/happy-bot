@@ -51,6 +51,10 @@ export default class P extends Command {
   
     const youtubeSearch = await this.youtube.search(songName);
     
+    if (!youtubeSearch) {
+      return message.reply("No songs found with that name.");
+    }
+
     const song = {
       title: youtubeSearch.title ?? 'Unknown',
       url: youtubeSearch.url,
