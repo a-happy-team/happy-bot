@@ -61,6 +61,15 @@ export default class Player {
     this.currentSong = song;
   }
 
+  resume() {
+    if (this.status !== 'paused') {
+      return
+    }
+
+    this._player.unpause();
+    this.status = 'playing';
+  }
+
   pause() {
     if (this.status !== 'playing') {
       // TODO: Send message to channel that player is not playing

@@ -7,6 +7,8 @@ import crypto from 'crypto';
 import P from "./commands/p";
 import Command from "./commands";
 import Skip from "./commands/skip";
+import Pause from "./commands/pause";
+import Resume from "./commands/resume";
 
 dotenv.config();
 
@@ -17,7 +19,9 @@ const player = new Player(queue);
 
 const commands: Command[] = [
   new P(client, youtube, queue, player),
-  new Skip(client, player)
+  new Skip(client, player),
+  new Pause(client, player),
+  new Resume(client, player)
 ]
 
 commands.forEach((command) => client.addCommand(command));
