@@ -59,7 +59,6 @@ client.on('messageCreate', async (message) => {
 
   queue.add(song);
 
-  console.log('Current song:', queue.currentSong?.title);
   console.table(queue.songs);
 
   player.play();
