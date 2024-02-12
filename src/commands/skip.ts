@@ -6,7 +6,7 @@ import { Message } from "discord.js";
 
 export default class Skip extends Command {
   prefix = '!skip';
-  description = 'Skip the current song. Usage: !skip';
+  description = 'Skip the current song. If there are no songs in the queue, the bot will leave the voice channel.';
 
   constructor(
     public readonly client: HappyClient,

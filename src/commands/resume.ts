@@ -5,7 +5,7 @@ import Player from "../modules/music/player";
 
 export default class Resume extends Command {
   prefix = '!resume';
-  description = 'Resume the current song. Usage: !resume';
+  description = 'Resume the current song if it\'s paused.';
 
   constructor(
     public readonly client: HappyClient,
