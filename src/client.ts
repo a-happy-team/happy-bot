@@ -1,5 +1,6 @@
 import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
 import Module from "./modules";
+import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
 
 type EventMap = {
   ready: Function[];
@@ -40,8 +41,8 @@ export default class HappyClient {
     this.modules.push(module);
   }
 
-  private loadModules() {
-    this.modules.forEach(module => new module(this).load());
+  joinVoiceChannel(params: JoinVoiceChannelParams) {
+    return joinVoiceChannel(params);
   }
 
   login() {
@@ -59,4 +60,14 @@ export default class HappyClient {
 
     this.client.login(process.env.BOT_TOKEN);
   }
+
+  private loadModules() {
+    this.modules.forEach(module => new module(this).load());
+  }
+}
+
+type JoinVoiceChannelParams = {
+  channelId: string;
+  guildId: string;
+  adapterCreator: DiscordGatewayAdapterCreator;
 }

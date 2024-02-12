@@ -85,4 +85,22 @@ export default class YoutubeModule extends Module {
       });
     });
   }
+
+  async search(input: string) {
+    return await this.youtubeSearch.searchOne(input, "video", true); 
+  }
+
+  async download(params: DownloadParams) {
+    return new Promise((resolve, reject) => {
+      ytdl(params.url, { filter: 'audioonly', quality: 'highestaudio' })
+        .pipe(fs.createWriteStream(params.fileName))
+        .on('finish', resolve)
+        .on('error', reject)
+    })
+  }
+}
+
+type DownloadParams = {
+  url: string;
+  fileName: string
 }
