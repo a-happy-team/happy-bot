@@ -1,8 +1,8 @@
 import { AudioPlayer, NoSubscriberBehavior, StreamType, VoiceConnection, createAudioPlayer, createAudioResource } from "@discordjs/voice";
-import HappyClient from "../../client";
 import Queue, { Song } from "./queue";
 import path from "path"
 import { SONGS_FOLDER } from "../../constants";
+import fs from 'fs'
 
 export default class Player {
   status: 'playing' | 'paused' | 'stopped' = 'stopped';
@@ -36,7 +36,6 @@ export default class Player {
   play() {
     const song = this._queue.currentSong;
 
-    console.table({ song, songPlaying: this.currentSong })
     if (this.currentSong?.fileName === song?.fileName) {
       return;
     }
@@ -92,26 +91,46 @@ export default class Player {
     this._player.stop();
     this._queue.clear();
     this.status = 'stopped';
+    this.deleteSongFromDisk();
     this.currentSong = null
   }
 
   skip() {
-    if (this._queue.isEmpty) {
-      return this.stop()
-    }
-
-    this._queue.next();
-    this.play();
+    this.next();
   }
 
   next() {
     if (this._queue.isEmpty) return this.stop();
 
+    this.deleteSongFromDisk(this.currentSong?.fileName);
     this._queue.next();
     this.play();
   }
 
   queue() {
     return this._queue.songs;
+  }
+
+  /**
+   * Deletes the specified song from disk. If no song is specified, it will delete all songs from disk.
+   */
+  private deleteSongFromDisk(name?: string | null) {
+
+    if (!name) {
+      fs.readdir(path.join(__dirname, '..', '..', '..', SONGS_FOLDER), (err, files) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+
+        files.forEach(file => {
+          fs.unlinkSync(path.join(__dirname, '..', '..', '..', SONGS_FOLDER, file));
+        });
+      });
+
+      return
+    }
+
+    fs.unlinkSync(path.join(__dirname, '..', '..', '..', SONGS_FOLDER, `${name}.mp3`));
   }
 }
