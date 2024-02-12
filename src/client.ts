@@ -1,6 +1,7 @@
 import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
 import Module from "./modules";
 import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
+import Command from "./commands";
 
 type EventMap = {
   ready: Function[];
@@ -39,6 +40,16 @@ export default class HappyClient {
 
   addModule(module: ModuleConstructor) {
     this.modules.push(module);
+  }
+
+  addCommand(command: Command) {
+    this.on('messageCreate', (message) => {
+      const prefix = message.content.split(' ')[0];
+
+      if (prefix === command.prefix) {
+        command.execute(message);
+      }
+    });
   }
 
   joinVoiceChannel(params: JoinVoiceChannelParams) {
