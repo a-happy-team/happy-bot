@@ -2,8 +2,6 @@ import crypto from "crypto";
 import Command from ".";
 import HappyClient from "../client";
 import Player from "../modules/music/player";
-import Queue from "../modules/music/queue";
-import YoutubeModule from "../modules/music/youtube";
 import { Message } from "discord.js";
 
 export default class Skip extends Command {
@@ -23,11 +21,6 @@ export default class Skip extends Command {
     const voiceChannel = message.member.voice.channel;
     const notInChannel = !voiceChannel;
     const isInDifferentChannel = this.client.connection?.joinConfig.channelId !== voiceChannel?.id;
-    
-    console.log({
-      voiceChannel,
-      connection: this.client.connection?.joinConfig,
-    })
 
     if (notInChannel || isInDifferentChannel) {
       return message.reply(
