@@ -18,6 +18,7 @@
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.2",
     "ffmpeg-static": "^5.2.0",
+    "glob": "^10.3.10",
     "libsodium-wrappers": "^0.7.13",
     "youtube-sr": "^4.3.10",
     "ytdl-core": "^4.11.5"
