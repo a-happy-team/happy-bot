@@ -5,7 +5,7 @@ import Player from "../modules/music/player";
 
 export default class Pause extends Command {
   prefix = '!pause';
-  description = 'Pause the current song. Usage: !pause';
+  description = 'Pause the current song. Use !resume to continue playing the song.';
 
   constructor(
     public readonly client: HappyClient,

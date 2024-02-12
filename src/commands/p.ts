@@ -8,7 +8,7 @@ import { Message } from "discord.js";
 
 export default class P extends Command {
   prefix = '!p';
-  description = 'Add a song to the queue and play it. Usage: !p <song name>';
+  description = 'Play a song or add it to the queue.';
 
   constructor(
     public readonly client: HappyClient,
