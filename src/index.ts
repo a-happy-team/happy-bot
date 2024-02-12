@@ -10,6 +10,7 @@ import Skip from "./commands/skip";
 import Pause from "./commands/pause";
 import Resume from "./commands/resume";
 import QueueCommand from "./commands/queue";
+import Help from "./commands/help";
 
 dotenv.config();
 
@@ -23,7 +24,8 @@ const commands: Command[] = [
   new Skip(client, player),
   new Pause(client, player),
   new Resume(client, player),
-  new QueueCommand(player, queue)
+  new QueueCommand(player, queue),
+  new Help()
 ]
 
 commands.forEach((command) => client.addCommand(command));
