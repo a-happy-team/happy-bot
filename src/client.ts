@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
 import Module from "./modules";
-import { DiscordGatewayAdapterCreator, joinVoiceChannel } from "@discordjs/voice";
+import { DiscordGatewayAdapterCreator, VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import Command from "./commands";
 
 type EventMap = {
@@ -21,6 +21,8 @@ export default class HappyClient {
   }
 
   modules: Array<ModuleConstructor> = [];
+
+  connection: VoiceConnection | null = null;
 
   constructor() {
     this.client = new Client({
@@ -53,7 +55,15 @@ export default class HappyClient {
   }
 
   joinVoiceChannel(params: JoinVoiceChannelParams) {
-    return joinVoiceChannel(params);
+    if (this.connection) {
+      // TODO: Message the user that the bot is already in a voice channel
+
+      return this.connection;
+    }
+
+    this.connection = joinVoiceChannel(params);
+
+    return this.connection;
   }
 
   login() {

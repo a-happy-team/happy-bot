@@ -82,7 +82,6 @@ export default class Player {
 
     this._player.stop();
     this._queue.clear();
-    this.connection?.destroy();
     this.status = 'stopped';
     this.currentSong = null
   }
