@@ -16,8 +16,8 @@ export default class P extends Command {
     private readonly queue: Queue,
     private readonly player: Player
     ) {
-    super(client);
-  }
+      super();
+    }
 
   async execute(message: Message) {
     if (!message.member) return 
