@@ -9,6 +9,7 @@ import Command from "./commands";
 import Skip from "./commands/skip";
 import Pause from "./commands/pause";
 import Resume from "./commands/resume";
+import QueueCommand from "./commands/queue";
 
 dotenv.config();
 
@@ -21,7 +22,8 @@ const commands: Command[] = [
   new P(client, youtube, queue, player),
   new Skip(client, player),
   new Pause(client, player),
-  new Resume(client, player)
+  new Resume(client, player),
+  new QueueCommand(player, queue)
 ]
 
 commands.forEach((command) => client.addCommand(command));

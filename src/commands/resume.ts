@@ -11,7 +11,7 @@ export default class Resume extends Command {
     public readonly client: HappyClient,
     private readonly player: Player
     ) {
-    super(client);
+    super();
   }
 
   async execute (message: Message) {
