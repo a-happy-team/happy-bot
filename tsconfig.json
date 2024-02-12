@@ -11,5 +11,6 @@
     "strict": true,                                      /* Enable all strict type-checking options. */
     "skipLibCheck": true,
     "moduleResolution": "node",
+    "outDir": "dist",                                    /* Redirect output structure to the directory. */
   }
 }

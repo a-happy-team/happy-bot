@@ -10,6 +10,8 @@ import HappyClient from "../../../client";
 import * as YoutubeSR from "youtube-sr";
 import ytdl from "ytdl-core";
 import fs from 'fs'
+import path from "path";
+import { SONGS_FOLDER } from "../../../constants";
 
 export default class YoutubeModule extends Module {
   youtubeSearch: typeof YoutubeSR.YouTube;
@@ -85,4 +87,24 @@ export default class YoutubeModule extends Module {
       });
     });
   }
+
+  async search(input: string) {
+    return await this.youtubeSearch.searchOne(input, "video", true); 
+  }
+
+  async download(params: DownloadParams) {
+    const songPath = path.join(__dirname, '..', '..', '..', '..', SONGS_FOLDER, `${params.fileName}.mp3`);
+    
+    return new Promise((resolve, reject) => {
+      ytdl(params.url, { filter: 'audioonly', quality: 'highestaudio' })
+        .pipe(fs.createWriteStream(songPath))
+        .on('finish', resolve)
+        .on('error', reject)
+    })
+  }
+}
+
+type DownloadParams = {
+  url: string;
+  fileName: string
 }
