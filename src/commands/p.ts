@@ -23,10 +23,13 @@ export default class P extends Command {
     if (!message.member) return 
 
     const voiceChannel = message.member.voice.channel;
-  
-    if (!voiceChannel) {
+    const notInChannel = !voiceChannel;
+    const isInDifferentChannel = this.client.connection?.joinConfig.channelId !== voiceChannel?.id;
+    
+
+    if (notInChannel || isInDifferentChannel) {
       return message.reply(
-        "You need to be in a voice channel to play music!"
+        "I'm already playing music in a different voice channel! Please join the same voice channel as me to add a song to the queue."
       );
     }
     
