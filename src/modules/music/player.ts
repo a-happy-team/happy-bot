@@ -1,5 +1,3 @@
-import fs from "fs";
-import path from "path";
 import {
   AudioPlayer,
   NoSubscriberBehavior,
@@ -8,6 +6,8 @@ import {
   createAudioPlayer,
   createAudioResource,
 } from "@discordjs/voice";
+import fs from "fs";
+import path from "path";
 import { SONGS_FOLDER } from "../../constants";
 import Queue, { Song } from "./queue";
 import YoutubeSource from "./youtube";
@@ -24,7 +24,7 @@ export default class Player {
 
   constructor(
     private readonly _queue: Queue,
-    private readonly youtube: YoutubeSource,
+    private readonly youtube: YoutubeSource
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -93,10 +93,11 @@ export default class Player {
       return;
     }
 
+    this.deleteSongFromDisk();
     this._player.stop();
     this._queue.clear();
     this.status = "stopped";
-    this.deleteSongFromDisk();
+    this._queue.currentSong = null;
     this.currentSong = null;
   }
 
@@ -112,38 +113,51 @@ export default class Player {
     this.play();
   }
 
-  queue() {
-    return this._queue.songs;
-  }
-
   clearQueue() {
-    this._queue.clear();
-
     this.deleteSongFromDisk();
+    this._queue.clear();
   }
 
   /**
    * Deletes the specified song from disk. If no song is specified, it will delete all songs from disk.
    */
   private deleteSongFromDisk(name?: string | null) {
+    const queueSongsFiles = this._queue.songs.map((song) => song.fileName);
     if (!name) {
-      fs.readdir(path.join(this.SONGS_FOLDER_PATH), (err, files) => {
-        if (err) {
-          console.error(err);
-          return;
-        }
+      if (!fs.existsSync(this.SONGS_FOLDER_PATH)) {
+        return;
+      }
 
-        files.forEach((file) => {
-          if (!this.currentSong?.fileName?.includes(file)) {
-            fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
-          }
-        });
+      const files = fs.readdirSync(path.join(this.SONGS_FOLDER_PATH));
+
+      if (
+        this.currentSong &&
+        fs.existsSync(
+          path.join(this.SONGS_FOLDER_PATH, `${this.currentSong.fileName}.mp3`)
+        )
+      ) {
+        fs.unlinkSync(
+          path.join(this.SONGS_FOLDER_PATH, `${this.currentSong.fileName}.mp3`)
+        );
+      }
+
+      files.forEach((file) => {
+        const isQueued = queueSongsFiles.includes(file.replace(".mp3", ""));
+        const fileExists = fs.existsSync(
+          path.join(this.SONGS_FOLDER_PATH, file)
+        );
+
+        if (isQueued && fileExists) {
+          fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
+        }
       });
 
       return;
     }
 
-    fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`));
+    if (fs.existsSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`))) {
+      fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`));
+    }
   }
 
   /**
