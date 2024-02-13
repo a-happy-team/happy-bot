@@ -116,6 +116,12 @@ export default class Player {
     return this._queue.songs;
   }
 
+  clearQueue() {
+    this._queue.clear();
+
+    this.deleteSongFromDisk();
+  }
+
   /**
    * Deletes the specified song from disk. If no song is specified, it will delete all songs from disk.
    */
@@ -128,7 +134,9 @@ export default class Player {
         }
 
         files.forEach((file) => {
-          fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
+          if (!this.currentSong?.fileName?.includes(file)) {
+            fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
+          }
         });
       });
 
