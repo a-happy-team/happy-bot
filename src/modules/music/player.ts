@@ -1,28 +1,39 @@
-import { AudioPlayer, NoSubscriberBehavior, StreamType, VoiceConnection, createAudioPlayer, createAudioResource } from "@discordjs/voice";
-import Queue, { Song } from "./queue";
-import path from "path"
+import fs from "fs";
+import path from "path";
+import {
+  AudioPlayer,
+  NoSubscriberBehavior,
+  StreamType,
+  VoiceConnection,
+  createAudioPlayer,
+  createAudioResource,
+} from "@discordjs/voice";
 import { SONGS_FOLDER } from "../../constants";
-import fs from 'fs'
+import Queue, { Song } from "./queue";
+import { Source } from "./source";
 
 export default class Player {
-  status: 'playing' | 'paused' | 'stopped' = 'stopped';
+  SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", SONGS_FOLDER);
+  PRELOAD_SONGS_COUNT = 5;
+  status: "playing" | "paused" | "stopped" = "stopped";
   _player: AudioPlayer;
 
-  currentSong: Song | null = null
+  currentSong: Song | null = null;
 
   connection: VoiceConnection | null = null;
 
   constructor(
     private readonly _queue: Queue,
-  ) {
+    private readonly source: Source.Contract,
+    ) {
     this._player = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Stop,
-      }
+      },
     });
 
-    this._player.on('stateChange', (oldState, newState) => {
-      if (newState.status === 'idle') {
+    this._player.on("stateChange", (oldState, newState) => {
+      if (newState.status === "idle") {
         this.next();
       }
     });
@@ -36,41 +47,35 @@ export default class Player {
   play() {
     const song = this._queue.currentSong;
 
-    if (this.currentSong?.fileName === song?.fileName) {
+    if (this.currentSong?.fileName === song?.fileName || !song) {
       return;
     }
 
-    if (!song || !song.fileName) {
-      // TODO: Send message to channel that queue is empty
-
-      return
-    }
-
-    const songPath = path.join(__dirname, '..', '..', '..', SONGS_FOLDER, `${song.fileName}.mp3`)
+    const songPath = path.join(this.SONGS_FOLDER_PATH, `${song.fileName}.mp3`);
 
     const resource = createAudioResource(songPath, {
       inputType: StreamType.Arbitrary,
-      inlineVolume: true
-    })
+      inlineVolume: true,
+    });
     resource.volume?.setVolume(0.2);
 
     this._player.play(resource);
-
-    this.status = 'playing';
+    this.status = "playing";
     this.currentSong = song;
+    this.preloadNextSongs(this.PRELOAD_SONGS_COUNT);
   }
 
   resume() {
-    if (this.status !== 'paused') {
-      return
+    if (this.status !== "paused") {
+      return;
     }
 
     this._player.unpause();
-    this.status = 'playing';
+    this.status = "playing";
   }
 
   pause() {
-    if (this.status !== 'playing') {
+    if (this.status !== "playing") {
       // TODO: Send message to channel that player is not playing
 
       return;
@@ -78,11 +83,11 @@ export default class Player {
 
     this._player.pause();
 
-    this.status = 'paused';
+    this.status = "paused";
   }
 
   stop() {
-    if (this.status === 'stopped') {
+    if (this.status === "stopped") {
       // TODO: Send message to channel that player is already stopped
 
       return;
@@ -90,9 +95,9 @@ export default class Player {
 
     this._player.stop();
     this._queue.clear();
-    this.status = 'stopped';
+    this.status = "stopped";
     this.deleteSongFromDisk();
-    this.currentSong = null
+    this.currentSong = null;
   }
 
   skip() {
@@ -115,22 +120,31 @@ export default class Player {
    * Deletes the specified song from disk. If no song is specified, it will delete all songs from disk.
    */
   private deleteSongFromDisk(name?: string | null) {
-
     if (!name) {
-      fs.readdir(path.join(__dirname, '..', '..', '..', SONGS_FOLDER), (err, files) => {
+      fs.readdir(path.join(this.SONGS_FOLDER_PATH), (err, files) => {
         if (err) {
           console.error(err);
           return;
         }
 
-        files.forEach(file => {
-          fs.unlinkSync(path.join(__dirname, '..', '..', '..', SONGS_FOLDER, file));
+        files.forEach((file) => {
+          fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
         });
       });
 
-      return
+      return;
     }
 
-    fs.unlinkSync(path.join(__dirname, '..', '..', '..', SONGS_FOLDER, `${name}.mp3`));
+    fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`));
+  }
+
+  /**
+   * Downloads `count` songs from the queue.
+   * It's safe to call this method multiple times, as it will only download the songs that are not already downloaded.
+   */
+  private async preloadNextSongs(count: number) {
+    const songs = this._queue.songs.slice(0, count);
+
+    await Promise.all(songs.map((song) => this.source.download(song)));
   }
 }

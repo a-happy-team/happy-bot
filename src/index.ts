@@ -11,16 +11,17 @@ import Pause from "./commands/pause";
 import Resume from "./commands/resume";
 import QueueCommand from "./commands/queue";
 import Help from "./commands/help";
+import YoutubeSource from "./modules/music/youtube";
 
 dotenv.config();
 
 const client = new HappyClient();
-const youtube = new YoutubeModule(client);
+const musicSource = new YoutubeSource();
 const queue = new Queue();
-const player = new Player(queue);
+const player = new Player(queue, musicSource);
 
 const commands: Command[] = [
-  new P(client, youtube, queue, player),
+  new P(client, musicSource, queue, player),
   new Skip(client, player),
   new Pause(client, player),
   new Resume(client, player),
