@@ -5,6 +5,7 @@ import Player from "../modules/music/player";
 import Queue from "../modules/music/queue";
 import YoutubeModule from "../modules/music/youtube";
 import { Message } from "discord.js";
+import { Source } from "../modules/music/source";
 
 export default class P extends Command {
   prefix = '!p';
@@ -12,7 +13,7 @@ export default class P extends Command {
 
   constructor(
     public readonly client: HappyClient,
-    private readonly youtube: YoutubeModule,
+    private readonly musicSource: Source.Contract,
     private readonly queue: Queue,
     private readonly player: Player
     ) {
@@ -49,7 +50,7 @@ export default class P extends Command {
   
     this.player.connect(connection);
   
-    const youtubeSearch = await this.youtube.search(songName);
+    const youtubeSearch = await this.musicSource.search({ search: songName });
     
     if (!youtubeSearch) {
       return message.reply("No songs found with that name.");
@@ -62,7 +63,7 @@ export default class P extends Command {
       fileName: crypto.randomUUID()
     }
   
-    await this.youtube.download(song);
+    await this.musicSource.download(song);
   
     this.queue.add(song);
 

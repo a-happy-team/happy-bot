@@ -1,102 +1,43 @@
-import {
-  NoSubscriberBehavior,
-  StreamType,
-  createAudioPlayer,
-  createAudioResource,
-  joinVoiceChannel,
-} from "@discordjs/voice";
-import Module from "../..";
-import HappyClient from "../../../client";
+import { Song } from "../queue";
 import * as YoutubeSR from "youtube-sr";
-import ytdl from "ytdl-core";
-import fs from 'fs'
 import path from "path";
 import { SONGS_FOLDER } from "../../../constants";
+import ytdl from "ytdl-core";
+import fs from 'fs'
+import { Source } from "../source";
 
-export default class YoutubeModule extends Module {
+
+export default class YoutubeSource implements Source.Contract {
+  SONGS_FOLDER_PATH = path.join(__dirname, '..', '..', '..', '..', SONGS_FOLDER);
   youtubeSearch: typeof YoutubeSR.YouTube;
 
-  constructor(client: HappyClient) {
-    super(client);
-
+  constructor() {
     this.youtubeSearch = YoutubeSR.YouTube;
   }
 
-  load() {
-    this.client.on("messageCreate", async (message) => {
-      console.log("New message:", message.content);
-      if (
-        // Message is not a music command
-        !message.content.startsWith("!p ") ||
-        // Message is from a bot
-        message.author.bot ||
-        // Message is not from a guild (server)
-        !message.guild ||
-        // Message is not from a member
-        !message.member
-      ) {
-        return;
-      }
+  async search(params: Source.SearchParams): Promise<Source.SearchResult | null> {
+    const search = await this.youtubeSearch.searchOne(params.search, "video", true);
 
-      const voiceChannel = message.member.voice.channel;
+    if (!search) {
+      return null;
+    }
 
-      if (!voiceChannel) {
-        return message.reply(
-          "You need to be in a voice channel to play music!"
-        );
-      }
-
-      // !p gossip maneskin
-      // ['!p ', 'gossip maneskin']
-      const [, songName] = message.content.split("!p ");
-
-      const connection = joinVoiceChannel({
-        channelId: voiceChannel.id,
-        guildId: voiceChannel.guild.id,
-        adapterCreator: voiceChannel.guild.voiceAdapterCreator,
-      });
-
-      const player = createAudioPlayer({
-        behaviors: {
-          noSubscriber: NoSubscriberBehavior.Stop,
-        },
-      });
-
-      const search = await this.youtubeSearch.searchOne(
-        songName,
-        "video",
-        true
-      );
-
-      message.reply(
-        `Playing ${search.title}! as requested by ${message.author.username}`
-      );
-
-      ytdl(search.url, { filter: 'audioonly', quality: 'highestaudio' })
-      .pipe(fs.createWriteStream('./song.mp3'))
-      .on('finish', () => {
-  
-        const resource = createAudioResource('song.mp3', {
-          inputType: StreamType.Arbitrary,
-          inlineVolume: true
-        });
-        resource.volume?.setVolume(0.2);
-      
-        player.play(resource);
-        connection.subscribe(player);
-      });
-    });
+    return {
+      title: search.title || "Unknown",
+      url: search.url,
+      source: 'youtube'
+    };
   }
 
-  async search(input: string) {
-    return await this.youtubeSearch.searchOne(input, "video", true); 
-  }
+  async download(song: Song) {
+    const songPath = path.join(this.SONGS_FOLDER_PATH, `${song.fileName}.mp3`);
 
-  async download(params: DownloadParams) {
-    const songPath = path.join(__dirname, '..', '..', '..', '..', SONGS_FOLDER, `${params.fileName}.mp3`);
-    
-    return new Promise((resolve, reject) => {
-      ytdl(params.url, { filter: 'audioonly', quality: 'highestaudio' })
+    if (fs.existsSync(songPath)) {
+      return;
+    }
+
+    return await new Promise((resolve, reject) => {
+      ytdl(song.url, { filter: 'audioonly', quality: 'highestaudio' })
         .pipe(fs.createWriteStream(songPath))
         .on('finish', resolve)
         .on('error', reject)
@@ -104,7 +45,3 @@ export default class YoutubeModule extends Module {
   }
 }
 
-type DownloadParams = {
-  url: string;
-  fileName: string
-}
