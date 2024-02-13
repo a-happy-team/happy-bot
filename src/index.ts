@@ -12,8 +12,8 @@ import Skip from "./commands/skip";
 import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
 import SpotifyClient from "./modules/music/spotify";
-import YoutubeModule from "./modules/music/youtube";
 import YoutubeSource from "./modules/music/youtube";
+import ConnectionManager from "./connection-manager";
 
 dotenv.config();
 
@@ -23,8 +23,10 @@ const spotify = new SpotifyClient(process.env.SPOTIFY_CLIENT_ID as string, proce
 const queue = new Queue();
 const player = new Player(queue, youtube);
 
+const connectionManager = new ConnectionManager(youtube, spotify);
+
 const commands: Command[] = [
-  new P(client, youtube, queue, player, spotify),
+  new P(client, connectionManager),
   new Skip(client, player),
   new Pause(client, player),
   new Resume(client, player),

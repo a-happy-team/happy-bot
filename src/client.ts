@@ -72,7 +72,7 @@ export default class HappyClient {
   }
 }
 
-type JoinVoiceChannelParams = {
+export type JoinVoiceChannelParams = {
   channelId: string;
   guildId: string;
   adapterCreator: DiscordGatewayAdapterCreator;
