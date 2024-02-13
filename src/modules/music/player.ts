@@ -149,7 +149,7 @@ export default class Player {
 
   deleteAllSongsFromDisk() {
     if (fs.existsSync(this.SONGS_FOLDER_PATH)) {
-      fs.rmdirSync(this.SONGS_FOLDER_PATH, { recursive: true });
+      fs.rmSync(this.SONGS_FOLDER_PATH, { recursive: true, force: true });
 
       fs.mkdirSync(this.SONGS_FOLDER_PATH);
     }
