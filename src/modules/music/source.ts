@@ -7,11 +7,11 @@ export namespace Source {
   }
   export type SearchParams = {
     search: string;
-  }
+  };
 
   export type SearchResult = Array<{
     title: string;
     url: string;
-    source: 'youtube' | 'spotify'
-  }>
+    source: "youtube" | "spotify";
+  }>;
 }

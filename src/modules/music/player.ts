@@ -25,7 +25,7 @@ export default class Player {
   constructor(
     private readonly _queue: Queue,
     private readonly source: Source.Contract,
-    ) {
+  ) {
     this._player = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Stop,

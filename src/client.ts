@@ -1,12 +1,12 @@
-import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
-import Module from "./modules";
 import { DiscordGatewayAdapterCreator, VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
 import Command from "./commands";
+import Module from "./modules";
 
 type EventMap = {
   ready: Function[];
   messageCreate: Array<(message: Message) => void>;
-}
+};
 
 type Event = keyof EventMap;
 
@@ -17,8 +17,8 @@ export default class HappyClient {
 
   events: EventMap = {
     ready: [],
-    messageCreate: []
-  }
+    messageCreate: [],
+  };
 
   modules: Array<ModuleConstructor> = [];
 
@@ -31,8 +31,8 @@ export default class HappyClient {
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.GuildVoiceStates,
         GatewayIntentBits.GuildMessageReactions,
-        GatewayIntentBits.MessageContent
-      ]
+        GatewayIntentBits.MessageContent,
+      ],
     });
   }
 
@@ -45,8 +45,8 @@ export default class HappyClient {
   }
 
   addCommand(command: Command) {
-    this.on('messageCreate', (message) => {
-      const prefix = message.content.split(' ')[0];
+    this.on("messageCreate", (message) => {
+      const prefix = message.content.split(" ")[0];
 
       if (prefix === command.prefix) {
         command.execute(message);
@@ -67,23 +67,23 @@ export default class HappyClient {
   }
 
   login() {
-    this.loadModules()
+    this.loadModules();
 
-    this.client.on('ready', () => {
-      this.events.ready.forEach(callback => callback());
+    this.client.on("ready", () => {
+      this.events.ready.forEach((callback) => callback());
 
-      console.log('Bot is ready');  
+      console.log("Bot is ready");
     });
 
-    this.client.on('messageCreate', (message) => {
-      this.events.messageCreate.forEach(callback => callback(message));
+    this.client.on("messageCreate", (message) => {
+      this.events.messageCreate.forEach((callback) => callback(message));
     });
 
     this.client.login(process.env.BOT_TOKEN);
   }
 
   private loadModules() {
-    this.modules.forEach(module => new module(this).load());
+    this.modules.forEach((module) => new module(this).load());
   }
 }
 
@@ -91,4 +91,4 @@ type JoinVoiceChannelParams = {
   channelId: string;
   guildId: string;
   adapterCreator: DiscordGatewayAdapterCreator;
-}
+};
