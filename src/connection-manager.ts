@@ -1,10 +1,10 @@
 import { VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
+import { Message } from "discord.js";
 import { JoinVoiceChannelParams } from "./client";
 import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
-import YoutubeSource from "./modules/music/youtube";
-import { Message } from "discord.js";
 import SpotifyClient from "./modules/music/spotify";
+import YoutubeSource from "./modules/music/youtube";
 
 export default class ConnectionManager {
   static instance: ConnectionManager;
@@ -25,7 +25,7 @@ export default class ConnectionManager {
     const voiceConnection = joinVoiceChannel(params);
 
     const queue = new Queue();
-    const player = new Player(queue, this.youtube);
+    const player = new Player(queue, this.youtube, this);
 
 
     const newConnection = {
@@ -49,6 +49,17 @@ export default class ConnectionManager {
     return this.connections.get(message.guildId);
   }
 
+  disconnect(guildId: string) {
+    const connection = this.connections.get(guildId);
+
+    if (!connection) {
+      return
+    }
+
+    connection.voiceConnection.destroy();
+    connection.player.deleteAllSongsFromDisk();
+    this.connections.delete(guildId);
+  }
   isInSameChannel(message: Message) {
     const voiceChannel = message.member?.voice.channel;
     const connection = this.getConnection(message);

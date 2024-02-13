@@ -1,8 +1,8 @@
 import crypto from "crypto";
 import { Message } from "discord.js";
 import Command from ".";
-import { SearchResult } from "../modules/music/youtube";
 import ConnectionManager from "../connection-manager";
+import { SearchResult } from "../modules/music/youtube";
 
 export default class P extends Command {
   prefix = "!p";
@@ -67,7 +67,7 @@ export default class P extends Command {
       fileName: crypto.randomUUID(),
     }));
 
-    await connection.youtube.download(songs[0]);
+    await connection.youtube.download(message.guildId as string, songs[0]);
 
     connection.queue.add(songs);
 

@@ -8,15 +8,21 @@ import {
 } from "@discordjs/voice";
 import fs from "fs";
 import path from "path";
+import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
 import Queue, { Song } from "./queue";
 import YoutubeSource from "./youtube";
 
 export default class Player {
-  SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", SONGS_FOLDER);
+  SONGS_FOLDER_PATH = '';
   PRELOAD_SONGS_COUNT = 5;
+
+  DISCONNECT_AFTER = 300_000; // 5 minutes
+
   status: "playing" | "paused" | "stopped" = "stopped";
   _player: AudioPlayer;
+
+  disconnectTimeout: NodeJS.Timeout | null = null;
 
   currentSong: Song | null = null;
 
@@ -24,7 +30,8 @@ export default class Player {
 
   constructor(
     private readonly _queue: Queue,
-    private readonly youtube: YoutubeSource
+    private readonly youtube: YoutubeSource,
+    private readonly connectionManager: ConnectionManager
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -35,6 +42,17 @@ export default class Player {
     this._player.on("stateChange", (oldState, newState) => {
       if (newState.status === "idle") {
         this.next();
+
+        // Disconnect from the voice channel if the queue is empty for 5 minutes
+        this.disconnectTimeout = setTimeout(() => {
+          if (this._queue.isEmpty) {
+            this.connectionManager.disconnect(this.connection?.joinConfig.guildId ?? '');
+          }
+        }, this.DISCONNECT_AFTER);
+      }
+
+      if (oldState.status === "idle" && newState.status === "playing") {
+        clearTimeout(this.disconnectTimeout as NodeJS.Timeout);
       }
     });
   }
@@ -42,6 +60,11 @@ export default class Player {
   connect(connection: VoiceConnection) {
     this.connection = connection;
     this.connection.subscribe(this._player);
+    this.SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", SONGS_FOLDER, connection.joinConfig.guildId);
+
+    if (!fs.existsSync(this.SONGS_FOLDER_PATH)) {
+      fs.mkdirSync(this.SONGS_FOLDER_PATH);
+    }
   }
 
   play() {
@@ -93,7 +116,7 @@ export default class Player {
       return;
     }
 
-    this.deleteSongFromDisk();
+    this.deleteAllSongsFromDisk();
     this._player.stop();
     this._queue.clear();
     this.status = "stopped";
@@ -108,55 +131,27 @@ export default class Player {
   next() {
     if (this._queue.isEmpty) return this.stop();
 
-    this.deleteSongFromDisk(this.currentSong?.fileName);
+    this.deleteSongFromDisk(this.currentSong?.fileName as string);
     this._queue.next();
     this.play();
   }
 
   clearQueue() {
-    this.deleteSongFromDisk();
+    this.deleteAllSongsFromDisk();
     this._queue.clear();
   }
 
-  /**
-   * Deletes the specified song from disk. If no song is specified, it will delete all songs from disk.
-   */
-  private deleteSongFromDisk(name?: string | null) {
-    const queueSongsFiles = this._queue.songs.map((song) => song.fileName);
-    if (!name) {
-      if (!fs.existsSync(this.SONGS_FOLDER_PATH)) {
-        return;
-      }
-
-      const files = fs.readdirSync(path.join(this.SONGS_FOLDER_PATH));
-
-      if (
-        this.currentSong &&
-        fs.existsSync(
-          path.join(this.SONGS_FOLDER_PATH, `${this.currentSong.fileName}.mp3`)
-        )
-      ) {
-        fs.unlinkSync(
-          path.join(this.SONGS_FOLDER_PATH, `${this.currentSong.fileName}.mp3`)
-        );
-      }
-
-      files.forEach((file) => {
-        const isQueued = queueSongsFiles.includes(file.replace(".mp3", ""));
-        const fileExists = fs.existsSync(
-          path.join(this.SONGS_FOLDER_PATH, file)
-        );
-
-        if (isQueued && fileExists) {
-          fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
-        }
-      });
-
-      return;
-    }
-
+  deleteSongFromDisk(name: string) {
     if (fs.existsSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`))) {
       fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`));
+    }
+  }
+
+  deleteAllSongsFromDisk() {
+    if (fs.existsSync(this.SONGS_FOLDER_PATH)) {
+      fs.rmdirSync(this.SONGS_FOLDER_PATH, { recursive: true });
+
+      fs.mkdirSync(this.SONGS_FOLDER_PATH);
     }
   }
 
@@ -167,6 +162,6 @@ export default class Player {
   private async preloadNextSongs(count: number) {
     const songs = this._queue.songs.slice(0, count);
 
-    await Promise.all(songs.map((song) => this.youtube.download(song)));
+    await Promise.all(songs.map((song) => this.youtube.download(this.connection?.joinConfig.guildId as string, song)));
   }
 }

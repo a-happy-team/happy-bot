@@ -59,8 +59,8 @@ export default class YoutubeSource {
     ];
   }
 
-  async download(song: Song) {
-    const songPath = path.join(this.SONGS_FOLDER_PATH, `${song.fileName}.mp3`);
+  async download(guildId: string, song: Song) {
+    const songPath = path.join(this.SONGS_FOLDER_PATH, guildId, `${song.fileName}.mp3`);
 
     if (fs.existsSync(songPath)) {
       return;
