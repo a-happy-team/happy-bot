@@ -23,7 +23,6 @@ export default class Queue {
 
   clear() {
     this.songs = [];
-    this.currentSong = null;
   }
 
   get length() {

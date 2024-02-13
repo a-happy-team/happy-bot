@@ -5,7 +5,6 @@ import HappyClient from "../client";
 import Player from "../modules/music/player";
 import Queue from "../modules/music/queue";
 import { Source } from "../modules/music/source";
-import YoutubeModule from "../modules/music/youtube";
 
 export default class P extends Command {
   prefix = "!p";
