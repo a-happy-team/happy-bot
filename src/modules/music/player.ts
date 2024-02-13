@@ -5,6 +5,7 @@ import { SONGS_FOLDER } from "../../constants";
 import fs from 'fs'
 
 export default class Player {
+  SONGS_FOLDER_PATH = path.join(__dirname, '..', '..', '..', SONGS_FOLDER);
   status: 'playing' | 'paused' | 'stopped' = 'stopped';
   _player: AudioPlayer;
 
@@ -117,20 +118,20 @@ export default class Player {
   private deleteSongFromDisk(name?: string | null) {
 
     if (!name) {
-      fs.readdir(path.join(__dirname, '..', '..', '..', SONGS_FOLDER), (err, files) => {
+      fs.readdir(path.join(this.SONGS_FOLDER_PATH), (err, files) => {
         if (err) {
           console.error(err);
           return;
         }
 
         files.forEach(file => {
-          fs.unlinkSync(path.join(__dirname, '..', '..', '..', SONGS_FOLDER, file));
+          fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, file));
         });
       });
 
       return
     }
 
-    fs.unlinkSync(path.join(__dirname, '..', '..', '..', SONGS_FOLDER, `${name}.mp3`));
+    fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`));
   }
 }
