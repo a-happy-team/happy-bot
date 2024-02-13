@@ -1,15 +1,13 @@
 import { Message } from "discord.js";
 import Command from ".";
-import HappyClient from "../client";
-import Player from "../modules/music/player";
+import ConnectionManager from "../connection-manager";
 
 export default class Resume extends Command {
   prefix = "!resume";
   description = "Resume the current song if it's paused.";
 
   constructor(
-    public readonly client: HappyClient,
-    private readonly player: Player,
+    private readonly connectionManager: ConnectionManager
   ) {
     super();
   }
@@ -17,13 +15,14 @@ export default class Resume extends Command {
   async execute(message: Message) {
     if (!message.member) return;
 
-    const voiceChannel = message.member.voice.channel;
-    const isInDifferentChannel = this.client.connection?.joinConfig.channelId !== voiceChannel?.id;
+    const notInChannel = !message.member.voice.channel;
+    const isInDifferentChannel = !this.connectionManager.isInSameChannel(message);
+    const connection = this.connectionManager.getConnection(message);
 
-    if (isInDifferentChannel) {
+    if (notInChannel || isInDifferentChannel || !connection) {
       return message.reply("You need to be in the same voice channel as me to resume the song.");
     }
 
-    this.player.resume();
+    connection.player.resume();
   }
 }

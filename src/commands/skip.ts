@@ -1,16 +1,14 @@
 import crypto from "crypto";
 import { Message } from "discord.js";
 import Command from ".";
-import HappyClient from "../client";
-import Player from "../modules/music/player";
+import ConnectionManager from "../connection-manager";
 
 export default class Skip extends Command {
   prefix = "!skip";
   description = "Skip the current song. If there are no songs in the queue, the bot will leave the voice channel.";
 
   constructor(
-    public readonly client: HappyClient,
-    private readonly player: Player,
+    private readonly connectionManager: ConnectionManager
   ) {
     super();
   }
@@ -18,14 +16,14 @@ export default class Skip extends Command {
   async execute(message: Message) {
     if (!message.member) return;
 
-    const voiceChannel = message.member.voice.channel;
-    const notInChannel = !voiceChannel;
-    const isInDifferentChannel = this.client.connection?.joinConfig.channelId !== voiceChannel?.id;
+    const notInChannel = !message.member.voice.channel;
+    const isInDifferentChannel = !this.connectionManager.isInSameChannel(message);
+    const connection = this.connectionManager.getConnection(message);
 
-    if (notInChannel || isInDifferentChannel) {
+    if (notInChannel || isInDifferentChannel || !connection) {
       return message.reply("You need to be in the same voice channel as the bot to skip the song!");
     }
 
-    this.player.skip();
+    connection.player.skip();
   }
 }

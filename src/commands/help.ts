@@ -1,6 +1,6 @@
-import path from "path";
 import { Message } from "discord.js";
 import { glob } from "glob";
+import path from "path";
 import Command from ".";
 
 export default class Help extends Command {

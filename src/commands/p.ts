@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import { Message } from "discord.js";
 import Command from ".";
-import HappyClient from "../client";
 import { SearchResult } from "../modules/music/youtube";
 import ConnectionManager from "../connection-manager";
 
@@ -10,7 +9,6 @@ export default class P extends Command {
   description = "Play a song or add it to the queue.";
 
   constructor(
-    public readonly client: HappyClient,
     private readonly connectionManager: ConnectionManager
   ) {
     super();

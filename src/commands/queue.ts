@@ -1,15 +1,13 @@
 import { Message } from "discord.js";
 import Command from ".";
-import Player from "../modules/music/player";
-import QueueModule from "../modules/music/queue";
+import ConnectionManager from "../connection-manager";
 
 export default class Queue extends Command {
   prefix = "!queue";
   description = "Show the current queue.";
 
   constructor(
-    private readonly player: Player,
-    private readonly queue: QueueModule,
+    private readonly connectionManager: ConnectionManager
   ) {
     super();
   }
@@ -17,13 +15,16 @@ export default class Queue extends Command {
   async execute(message: Message) {
     if (!message.member) return;
 
-    const queue = this.queue.songs;
-    const currentSong = this.player.currentSong;
+    const connection = this.connectionManager.getConnection(message);
 
-    if (!currentSong) {
+    if (!connection) {
+      return message.reply("I'm not in a voice channel.");
+    }
+
+    if (!connection.player.currentSong) {
       return message.reply("The queue is empty.");
     }
 
-    message.reply(this.queue.toDiscordMessage());
+    message.reply(connection.queue.toDiscordMessage());
   }
 }
