@@ -9,9 +9,9 @@ export namespace Source {
     search: string;
   }
 
-  export type SearchResult = {
+  export type SearchResult = Array<{
     title: string;
     url: string;
     source: 'youtube' | 'spotify'
-  }
+  }>
 }
