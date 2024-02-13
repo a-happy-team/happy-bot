@@ -24,6 +24,7 @@
     "ytdl-core": "^4.11.5"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.5.3",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
   }
