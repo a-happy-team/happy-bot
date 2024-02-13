@@ -18,7 +18,7 @@ dotenv.config();
 const client = new HappyClient();
 const musicSource = new YoutubeSource();
 const queue = new Queue();
-const player = new Player(queue);
+const player = new Player(queue, musicSource);
 
 const commands: Command[] = [
   new P(client, musicSource, queue, player),

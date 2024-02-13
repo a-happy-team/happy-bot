@@ -10,9 +10,11 @@ import {
 } from "@discordjs/voice";
 import { SONGS_FOLDER } from "../../constants";
 import Queue, { Song } from "./queue";
+import { Source } from "./source";
 
 export default class Player {
   SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", SONGS_FOLDER);
+  PRELOAD_SONGS_COUNT = 5;
   status: "playing" | "paused" | "stopped" = "stopped";
   _player: AudioPlayer;
 
@@ -20,7 +22,10 @@ export default class Player {
 
   connection: VoiceConnection | null = null;
 
-  constructor(private readonly _queue: Queue) {
+  constructor(
+    private readonly _queue: Queue,
+    private readonly source: Source.Contract,
+    ) {
     this._player = createAudioPlayer({
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Stop,
@@ -42,7 +47,6 @@ export default class Player {
   play() {
     const song = this._queue.currentSong;
 
-    console.log("Playing song", song);
     if (this.currentSong?.fileName === song?.fileName || !song) {
       return;
     }
@@ -56,9 +60,9 @@ export default class Player {
     resource.volume?.setVolume(0.2);
 
     this._player.play(resource);
-
     this.status = "playing";
     this.currentSong = song;
+    this.preloadNextSongs(this.PRELOAD_SONGS_COUNT);
   }
 
   resume() {
@@ -132,5 +136,15 @@ export default class Player {
     }
 
     fs.unlinkSync(path.join(this.SONGS_FOLDER_PATH, `${name}.mp3`));
+  }
+
+  /**
+   * Downloads `count` songs from the queue.
+   * It's safe to call this method multiple times, as it will only download the songs that are not already downloaded.
+   */
+  private async preloadNextSongs(count: number) {
+    const songs = this._queue.songs.slice(0, count);
+
+    await Promise.all(songs.map((song) => this.source.download(song)));
   }
 }
