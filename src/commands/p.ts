@@ -5,6 +5,7 @@ import HappyClient from "../client";
 import Player from "../modules/music/player";
 import Queue from "../modules/music/queue";
 import { Source } from "../modules/music/source";
+import SpotifyClient from "../modules/music/spotify";
 
 export default class P extends Command {
   prefix = "!p";
@@ -15,6 +16,7 @@ export default class P extends Command {
     private readonly musicSource: Source.Contract,
     private readonly queue: Queue,
     private readonly player: Player,
+    private readonly spotify: SpotifyClient,
   ) {
     super();
   }
@@ -35,7 +37,7 @@ export default class P extends Command {
 
     // !p gossip maneskin
     // ['!p ', 'gossip maneskin']
-    const [, songName] = message.content.split("!p ");
+    const [, search] = message.content.split("!p ");
 
     const connection = this.client.joinVoiceChannel({
       channelId: voiceChannel.id,
@@ -45,7 +47,21 @@ export default class P extends Command {
 
     this.player.connect(connection);
 
-    const youtubeSearch = await this.musicSource.search({ search: songName });
+    let youtubeSearch: Source.SearchResult | null = null;
+
+    if (this.spotify.isPlaylistUrl(search)) {
+      const tracks = await this.spotify.getTracks(search);
+
+      if (!tracks.length) {
+        return message.reply("No playlist found.");
+      }
+
+      youtubeSearch = (await Promise.all(tracks.map((track) => this.musicSource.search({ search: track.title }))))
+        .flat()
+        .filter(Boolean) as Source.SearchResult;
+    } else {
+      youtubeSearch = await this.musicSource.search({ search: search });
+    }
 
     if (!youtubeSearch?.length) {
       return message.reply("No songs found with that name.");

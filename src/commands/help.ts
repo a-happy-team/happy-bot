@@ -7,10 +7,6 @@ export default class Help extends Command {
   prefix = "!help";
   description = "Shows the help message";
 
-  constructor() {
-    super();
-  }
-
   async execute(message: Message) {
     const commandsPath = `${path.resolve(__dirname)}/*.[jt]s`;
 
