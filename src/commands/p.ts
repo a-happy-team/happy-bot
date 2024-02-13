@@ -4,8 +4,8 @@ import Command from ".";
 import HappyClient from "../client";
 import Player from "../modules/music/player";
 import Queue from "../modules/music/queue";
-import { Source } from "../modules/music/source";
 import SpotifyClient from "../modules/music/spotify";
+import YoutubeSource, { SearchResult } from "../modules/music/youtube";
 
 export default class P extends Command {
   prefix = "!p";
@@ -13,7 +13,7 @@ export default class P extends Command {
 
   constructor(
     public readonly client: HappyClient,
-    private readonly musicSource: Source.Contract,
+    private readonly youtube: YoutubeSource,
     private readonly queue: Queue,
     private readonly player: Player,
     private readonly spotify: SpotifyClient,
@@ -47,7 +47,7 @@ export default class P extends Command {
 
     this.player.connect(connection);
 
-    let youtubeSearch: Source.SearchResult | null = null;
+    let youtubeSearch: SearchResult | null = null;
 
     if (this.spotify.isPlaylistUrl(search)) {
       const tracks = await this.spotify.getTracks(search);
@@ -56,11 +56,11 @@ export default class P extends Command {
         return message.reply("No playlist found.");
       }
 
-      youtubeSearch = (await Promise.all(tracks.map((track) => this.musicSource.search({ search: track.title }))))
+      youtubeSearch = (await Promise.all(tracks.map((track) => this.youtube.search({ search: track.title }))))
         .flat()
-        .filter(Boolean) as Source.SearchResult;
+        .filter(Boolean) as SearchResult;
     } else {
-      youtubeSearch = await this.musicSource.search({ search: search });
+      youtubeSearch = await this.youtube.search({ search: search });
     }
 
     if (!youtubeSearch?.length) {
@@ -74,7 +74,7 @@ export default class P extends Command {
       fileName: crypto.randomUUID(),
     }));
 
-    await this.musicSource.download(songs[0]);
+    await this.youtube.download(songs[0]);
 
     this.queue.add(songs);
 

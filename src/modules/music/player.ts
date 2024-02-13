@@ -10,7 +10,7 @@ import {
 } from "@discordjs/voice";
 import { SONGS_FOLDER } from "../../constants";
 import Queue, { Song } from "./queue";
-import { Source } from "./source";
+import YoutubeSource from "./youtube";
 
 export default class Player {
   SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", SONGS_FOLDER);
@@ -24,7 +24,7 @@ export default class Player {
 
   constructor(
     private readonly _queue: Queue,
-    private readonly source: Source.Contract,
+    private readonly youtube: YoutubeSource,
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -153,6 +153,6 @@ export default class Player {
   private async preloadNextSongs(count: number) {
     const songs = this._queue.songs.slice(0, count);
 
-    await Promise.all(songs.map((song) => this.source.download(song)));
+    await Promise.all(songs.map((song) => this.youtube.download(song)));
   }
 }

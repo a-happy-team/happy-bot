@@ -18,13 +18,13 @@ import YoutubeSource from "./modules/music/youtube";
 dotenv.config();
 
 const client = new HappyClient();
-const musicSource = new YoutubeSource();
+const youtube = new YoutubeSource();
 const spotify = new SpotifyClient(process.env.SPOTIFY_CLIENT_ID as string, process.env.SPOTIFY_CLIENT_SECRET as string);
 const queue = new Queue();
-const player = new Player(queue, musicSource);
+const player = new Player(queue, youtube);
 
 const commands: Command[] = [
-  new P(client, musicSource, queue, player, spotify),
+  new P(client, youtube, queue, player, spotify),
   new Skip(client, player),
   new Pause(client, player),
   new Resume(client, player),

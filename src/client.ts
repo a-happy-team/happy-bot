@@ -1,16 +1,13 @@
 import { DiscordGatewayAdapterCreator, VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
 import Command from "./commands";
-import Module from "./modules";
 
 type EventMap = {
-  ready: Function[];
+  ready: Array<() => void>;
   messageCreate: Array<(message: Message) => void>;
 };
 
 type Event = keyof EventMap;
-
-type ModuleConstructor = { new (client: HappyClient): Module };
 
 export default class HappyClient {
   client: Client;
@@ -19,8 +16,6 @@ export default class HappyClient {
     ready: [],
     messageCreate: [],
   };
-
-  modules: Array<ModuleConstructor> = [];
 
   connection: VoiceConnection | null = null;
 
@@ -37,11 +32,7 @@ export default class HappyClient {
   }
 
   on<T extends Event>(event: T, callback: EventMap[T][number]) {
-    this.events[event].push(callback as any);
-  }
-
-  addModule(module: ModuleConstructor) {
-    this.modules.push(module);
+    this.events[event].push(callback as never);
   }
 
   addCommand(command: Command) {
@@ -67,8 +58,6 @@ export default class HappyClient {
   }
 
   login() {
-    this.loadModules();
-
     this.client.on("ready", () => {
       this.events.ready.forEach((callback) => callback());
 
@@ -80,10 +69,6 @@ export default class HappyClient {
     });
 
     this.client.login(process.env.BOT_TOKEN);
-  }
-
-  private loadModules() {
-    this.modules.forEach((module) => new module(this).load());
   }
 }
 

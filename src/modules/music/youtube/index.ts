@@ -4,9 +4,17 @@ import * as YoutubeSR from "youtube-sr";
 import ytdl from "ytdl-core";
 import { SONGS_FOLDER } from "../../../constants";
 import { Song } from "../queue";
-import { Source } from "../source";
 
-export default class YoutubeSource implements Source.Contract {
+export type SearchParams = {
+  search: string;
+};
+
+export type SearchResult = Array<{
+  title: string;
+  url: string;
+  source: "youtube";
+}>
+export default class YoutubeSource {
   SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", "..", SONGS_FOLDER);
   youtubeSearch: typeof YoutubeSR.YouTube;
 
@@ -14,7 +22,7 @@ export default class YoutubeSource implements Source.Contract {
     this.youtubeSearch = YoutubeSR.YouTube;
   }
 
-  async search(params: Source.SearchParams): Promise<Source.SearchResult | null> {
+  async search(params: SearchParams): Promise<SearchResult | null> {
     const YOUTUBE_PLAYLIST_REGEX = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
 
     const isPlaylist = YOUTUBE_PLAYLIST_REGEX.test(params.search);
@@ -29,7 +37,7 @@ export default class YoutubeSource implements Source.Contract {
               title: video.title || "Unknown",
               url: video.url,
               source: "youtube",
-            }) satisfies Source.SearchResult[number],
+            }) satisfies SearchResult[number],
         );
 
         return videos;
