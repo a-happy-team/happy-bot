@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
+import { Song } from "../modules/music/queue";
 import { SearchResult } from "../modules/music/youtube";
 
 export default class P extends Command {
@@ -60,11 +61,12 @@ export default class P extends Command {
       return message.reply("No songs found with that name.");
     }
 
-    const songs = youtubeSearch.map((song) => ({
+    const songs: Song[] = youtubeSearch.map((song) => ({
       title: song.title,
       url: song.url,
       requestedBy: message.author.id,
       fileName: crypto.randomUUID(),
+      skipVotes: new Set(),
     }));
 
     await connection.youtube.download(message.guildId as string, songs[0]);
