@@ -8,6 +8,7 @@ import Pause from "./commands/pause";
 import QueueCommand from "./commands/queue";
 import Resume from "./commands/resume";
 import Skip from "./commands/skip";
+import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
@@ -30,6 +31,7 @@ const main = async () => {
       new QueueCommand(connectionManager),
       new Help(),
       new Clear(connectionManager),
+      new Stop(connectionManager),
     ];
     
     commands.forEach((command) => client.addCommand(command));
