@@ -3,6 +3,12 @@ export type Song = {
   url: string;
   requestedBy: string;
   fileName: string | null;
+
+  /**
+   * The votes to skip the song.
+   * @value The user ID of the voter.
+   */
+  skipVotes: Set<string>;
 };
 export default class Queue {
   songs: Song[] = [];
@@ -31,6 +37,22 @@ export default class Queue {
 
   get isEmpty() {
     return this.songs.length === 0;
+  }
+
+  get skipVotes() {
+    return this.currentSong?.skipVotes.size ?? 0;
+  }
+
+  alreadyVoted(userId: string) {
+    return this.currentSong?.skipVotes.has(userId) ?? false;
+  }
+
+  skip(userId: string) {
+    const song = this.currentSong;
+
+    if (!song) return;
+
+    song.skipVotes.add(userId);
   }
 
   toDiscordMessage() {

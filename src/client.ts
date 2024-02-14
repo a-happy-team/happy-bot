@@ -1,5 +1,5 @@
-import { DiscordGatewayAdapterCreator, VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
-import { Client, GatewayIntentBits, Interaction, Message } from "discord.js";
+import { DiscordGatewayAdapterCreator } from "@discordjs/voice";
+import { Client, GatewayIntentBits, Message } from "discord.js";
 import Command from "./commands";
 
 type EventMap = {
@@ -10,17 +10,15 @@ type EventMap = {
 type Event = keyof EventMap;
 
 export default class HappyClient {
-  client: Client;
+  discordClient: Client;
 
   events: EventMap = {
     ready: [],
     messageCreate: [],
   };
 
-  connection: VoiceConnection | null = null;
-
   constructor() {
-    this.client = new Client({
+    this.discordClient = new Client({
       intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
@@ -45,30 +43,18 @@ export default class HappyClient {
     });
   }
 
-  joinVoiceChannel(params: JoinVoiceChannelParams) {
-    if (this.connection) {
-      // TODO: Message the user that the bot is already in a voice channel
-
-      return this.connection;
-    }
-
-    this.connection = joinVoiceChannel(params);
-
-    return this.connection;
-  }
-
   login() {
-    this.client.on("ready", () => {
+    this.discordClient.on("ready", () => {
       this.events.ready.forEach((callback) => callback());
 
       console.log("Bot is ready");
     });
 
-    this.client.on("messageCreate", (message) => {
+    this.discordClient.on("messageCreate", (message) => {
       this.events.messageCreate.forEach((callback) => callback(message));
     });
 
-    this.client.login(process.env.BOT_TOKEN);
+    this.discordClient.login(process.env.BOT_TOKEN);
   }
 }
 

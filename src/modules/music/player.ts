@@ -17,6 +17,13 @@ export default class Player {
   SONGS_FOLDER_PATH = '';
   PRELOAD_SONGS_COUNT = 5;
 
+  /**
+   * The percentage of votes needed to skip the current song.
+   * If the number of votes to skip is greater than this percentage, the song will be skipped.
+   * @value The percentage of votes needed to skip the song. Ranging from 0 to 1.
+   */
+  PERCENTAGE_OF_VOTES_TO_SKIP = 0.5;
+
   DISCONNECT_AFTER = 300_000; // 5 minutes
 
   status: "playing" | "paused" | "stopped" = "stopped";
@@ -124,8 +131,18 @@ export default class Player {
     this.currentSong = null;
   }
 
-  skip() {
-    this.next();
+  skip(userId: string, membersInChannel: number) {
+    this._queue.skip(userId);
+
+    const votes = this._queue.skipVotes;
+
+    if (votes / membersInChannel > this.PERCENTAGE_OF_VOTES_TO_SKIP) {
+      this.next();
+
+      return true
+    }
+
+    return false
   }
 
   next() {
