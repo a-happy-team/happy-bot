@@ -60,7 +60,7 @@ export default class Player {
   connect(connection: VoiceConnection) {
     this.connection = connection;
     this.connection.subscribe(this._player);
-    this.SONGS_FOLDER_PATH = path.join(__dirname, "..", "..", "..", SONGS_FOLDER, connection.joinConfig.guildId);
+    this.SONGS_FOLDER_PATH = path.join(SONGS_FOLDER, connection.joinConfig.guildId);
 
     if (!fs.existsSync(this.SONGS_FOLDER_PATH)) {
       fs.mkdirSync(this.SONGS_FOLDER_PATH);

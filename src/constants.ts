@@ -1,1 +1,1 @@
-export const SONGS_FOLDER = "songs";
+export const SONGS_FOLDER = "/tmp";
