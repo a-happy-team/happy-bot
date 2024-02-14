@@ -6,3 +6,9 @@ dev:
 
 run-dev:
 	docker run -it --name happy-bot -v .:/app -p 3000:3000 --restart unless-stopped discord-bot:latest bash -c "npm run dev"
+
+build:
+	docker build -t discord-bot:latest .
+
+start:
+	docker run -d --name happy-bot --env-file=.env --restart unless-stopped discord-bot:latest

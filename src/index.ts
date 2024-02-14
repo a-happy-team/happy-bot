@@ -9,8 +9,6 @@ import QueueCommand from "./commands/queue";
 import Resume from "./commands/resume";
 import Skip from "./commands/skip";
 import ConnectionManager from "./connection-manager";
-import Player from "./modules/music/player";
-import Queue from "./modules/music/queue";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
 
@@ -21,8 +19,6 @@ const main = async () => {
     const client = new HappyClient();
     const youtube = new YoutubeSource();
     const spotify = new SpotifyClient(process.env.SPOTIFY_CLIENT_ID as string, process.env.SPOTIFY_CLIENT_SECRET as string);
-    const queue = new Queue();
-    const player = new Player(queue, youtube);
     
     const connectionManager = new ConnectionManager(youtube, spotify);
     
