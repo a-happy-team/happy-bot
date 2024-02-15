@@ -136,7 +136,7 @@ export default class Player {
 
     const votes = this._queue.skipVotes;
 
-    if (votes / membersInChannel > this.PERCENTAGE_OF_VOTES_TO_SKIP) {
+    if (votes / membersInChannel >= this.PERCENTAGE_OF_VOTES_TO_SKIP) {
       this.next();
 
       return true
