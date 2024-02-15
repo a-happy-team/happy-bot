@@ -1,5 +1,5 @@
 import { DiscordGatewayAdapterCreator } from "@discordjs/voice";
-import { Client, GatewayIntentBits, Message } from "discord.js";
+import { ActivityType, Client, GatewayIntentBits, Message } from "discord.js";
 import Command from "./commands";
 
 type EventMap = {
@@ -26,6 +26,14 @@ export default class HappyClient {
         GatewayIntentBits.GuildMessageReactions,
         GatewayIntentBits.MessageContent,
       ],
+      presence: {
+        activities: [
+          {
+            name: "Happy Music! 🎶",
+            type: ActivityType.Playing
+          },
+        ],
+      },
     });
   }
 
