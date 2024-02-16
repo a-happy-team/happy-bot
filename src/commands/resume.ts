@@ -6,9 +6,7 @@ export default class Resume extends Command {
   prefix = "!resume";
   description = "Resume the current song if it's paused.";
 
-  constructor(
-    private readonly connectionManager: ConnectionManager
-  ) {
+  constructor(private readonly connectionManager: ConnectionManager) {
     super();
   }
 

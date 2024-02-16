@@ -6,9 +6,7 @@ export default class Skip extends Command {
   prefix = "!skip";
   description = "Skip the current song. If there are no songs in the queue, the bot will leave the voice channel.";
 
-  constructor(
-    private readonly connectionManager: ConnectionManager
-  ) {
+  constructor(private readonly connectionManager: ConnectionManager) {
     super();
   }
 
@@ -39,7 +37,9 @@ export default class Skip extends Command {
     const wasSkipped = connection.player.skip(message.author.id, membersInChannel);
 
     if (!wasSkipped) {
-      return message.reply("**Vote to skip** received! You need at least 50% of the members in the voice channel to skip the song.");
+      return message.reply(
+        "**Vote to skip** received! You need at least 50% of the members in the voice channel to skip the song.",
+      );
     }
 
     return message.reply("The song was skipped!");

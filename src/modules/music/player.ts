@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import {
   AudioPlayer,
   NoSubscriberBehavior,
@@ -6,15 +8,13 @@ import {
   createAudioPlayer,
   createAudioResource,
 } from "@discordjs/voice";
-import fs from "fs";
-import path from "path";
 import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
 import Queue, { Song } from "./queue";
 import YoutubeSource from "./youtube";
 
 export default class Player {
-  SONGS_FOLDER_PATH = '';
+  SONGS_FOLDER_PATH = "";
   PRELOAD_SONGS_COUNT = 5;
 
   /**
@@ -38,7 +38,7 @@ export default class Player {
   constructor(
     private readonly _queue: Queue,
     private readonly youtube: YoutubeSource,
-    private readonly connectionManager: ConnectionManager
+    private readonly connectionManager: ConnectionManager,
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -53,7 +53,7 @@ export default class Player {
         // Disconnect from the voice channel if the queue is empty for 5 minutes
         this.disconnectTimeout = setTimeout(() => {
           if (this._queue.isEmpty) {
-            this.connectionManager.disconnect(this.connection?.joinConfig.guildId ?? '');
+            this.connectionManager.disconnect(this.connection?.joinConfig.guildId ?? "");
           }
         }, this.DISCONNECT_AFTER);
       }
@@ -139,10 +139,10 @@ export default class Player {
     if (votes / membersInChannel >= this.PERCENTAGE_OF_VOTES_TO_SKIP) {
       this.next();
 
-      return true
+      return true;
     }
 
-    return false
+    return false;
   }
 
   next() {

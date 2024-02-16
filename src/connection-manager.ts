@@ -27,14 +27,13 @@ export default class ConnectionManager {
     const queue = new Queue();
     const player = new Player(queue, this.youtube, this);
 
-
     const newConnection = {
       voiceConnection,
       player,
       queue,
       youtube: this.youtube,
       spotify: this.spotify,
-    }
+    };
 
     this.connections.set(params.guildId, newConnection);
 
@@ -53,7 +52,7 @@ export default class ConnectionManager {
     const connection = this.connections.get(guildId);
 
     if (!connection) {
-      return
+      return;
     }
 
     connection.voiceConnection.destroy();
@@ -78,4 +77,4 @@ type Connection = {
   queue: Queue;
   youtube: YoutubeSource;
   spotify: SpotifyClient;
-}
+};
