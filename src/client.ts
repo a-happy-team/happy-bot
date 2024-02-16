@@ -30,7 +30,7 @@ export default class HappyClient {
         activities: [
           {
             name: "Happy Music! 🎶",
-            type: ActivityType.Playing
+            type: ActivityType.Playing,
           },
         ],
       },
@@ -43,16 +43,14 @@ export default class HappyClient {
 
   addCommand(command: Command) {
     this.on("messageCreate", (message) => {
-
       const prefix = message.content.trim().split(" ")[0];
 
       if (prefix === command.prefix) {
-        ///TODO: validate command before executing
-        command.execute(message);
+        if (command.validate(message)) {
+          command.execute(message);
+        }
         return;
       }
-
-      return message.reply("I don't understand that command");
     });
   }
 

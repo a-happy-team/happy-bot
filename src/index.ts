@@ -19,10 +19,13 @@ const main = async () => {
 
     const client = new HappyClient();
     const youtube = new YoutubeSource();
-    const spotify = new SpotifyClient(process.env.SPOTIFY_CLIENT_ID as string, process.env.SPOTIFY_CLIENT_SECRET as string);
-    
+    const spotify = new SpotifyClient(
+      process.env.SPOTIFY_CLIENT_ID as string,
+      process.env.SPOTIFY_CLIENT_SECRET as string,
+    );
+
     const connectionManager = new ConnectionManager(youtube, spotify);
-    
+
     const commands: Command[] = [
       new P(connectionManager),
       new Skip(connectionManager),
@@ -33,16 +36,15 @@ const main = async () => {
       new Clear(connectionManager),
       new Stop(connectionManager),
     ];
-    
+
     commands.forEach((command) => client.addCommand(command));
-    
+
     client.login();
-    
   } catch (error) {
     console.error(error);
 
     process.exit(1);
   }
-}
+};
 
 main();
