@@ -12,7 +12,8 @@ export type SearchParams = {
 export type SearchResult = Array<{
   title: string;
   url: string;
-  source: "youtube";
+  duration: string;
+  thumbnail: string;
 }>;
 export default class YoutubeSource {
   SONGS_FOLDER_PATH = path.join(SONGS_FOLDER);
@@ -36,7 +37,8 @@ export default class YoutubeSource {
             ({
               title: video.title || "Unknown",
               url: video.url,
-              source: "youtube",
+              duration: search.durationFormatted,
+              thumbnail: search.thumbnail?.url ?? "",
             }) satisfies SearchResult[number],
         );
 
@@ -54,7 +56,8 @@ export default class YoutubeSource {
       {
         title: search.title || "Unknown",
         url: search.url,
-        source: "youtube",
+        duration: search.durationFormatted,
+        thumbnail: search.thumbnail?.url ?? "",
       },
     ];
   }

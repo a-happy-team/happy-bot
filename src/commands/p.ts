@@ -61,6 +61,8 @@ export default class P extends Command {
     const songs: Song[] = youtubeSearch.map((song) => ({
       title: song.title,
       url: song.url,
+      duration: song.duration,
+      thumbnail: song.thumbnail,
       requestedBy: message.author.id,
       fileName: crypto.randomUUID(),
       skipVotes: new Set(),
