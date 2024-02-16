@@ -1,13 +1,13 @@
+import fs from "fs";
+import path from "path";
 import {
   AudioPlayer,
   NoSubscriberBehavior,
   StreamType,
   VoiceConnection,
   createAudioPlayer,
-  createAudioResource
+  createAudioResource,
 } from "@discordjs/voice";
-import fs from "fs";
-import path from "path";
 import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
 import Queue, { Song } from "./queue";
@@ -179,12 +179,14 @@ export default class Player {
   private async preloadNextSongs(count: number) {
     const songs = this._queue.songs.slice(0, count);
 
-    await Promise.all(songs.map(async (song) => {
-      const downloaded = await this.youtube.download(this.connection?.joinConfig.guildId as string, song);
+    await Promise.all(
+      songs.map(async (song) => {
+        const downloaded = await this.youtube.download(this.connection?.joinConfig.guildId as string, song);
 
-      if (!downloaded) {
-        this._queue.remove(song.fileName);
-      }
-    }))
+        if (!downloaded) {
+          this._queue.remove(song.fileName);
+        }
+      }),
+    );
   }
 }
