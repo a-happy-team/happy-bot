@@ -3,6 +3,8 @@ export type Song = {
   url: string;
   requestedBy: string;
   fileName: string;
+  duration: string;
+  thumbnail: string;
 
   /**
    * The votes to skip the song.
