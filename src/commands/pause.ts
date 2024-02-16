@@ -6,9 +6,7 @@ export default class Pause extends Command {
   prefix = "!pause";
   description = "Pause the current song. Use !resume to continue playing the song.";
 
-  constructor(
-    private readonly connectionManager: ConnectionManager
-  ) {
+  constructor(private readonly connectionManager: ConnectionManager) {
     super();
   }
 

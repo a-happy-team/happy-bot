@@ -9,9 +9,7 @@ export default class P extends Command {
   prefix = "!p";
   description = "Play a song or add it to the queue.";
 
-  constructor(
-    private readonly connectionManager: ConnectionManager
-  ) {
+  constructor(private readonly connectionManager: ConnectionManager) {
     super();
   }
 
@@ -28,7 +26,6 @@ export default class P extends Command {
       return message.reply("You need to be in the same voice channel as the bot to add a song to the queue.");
     }
 
-
     if (!connection) {
       connection = this.connectionManager.joinVoiceChannel({
         channelId: message.member.voice.channel.id,
@@ -37,12 +34,7 @@ export default class P extends Command {
       });
     }
 
-    const search = message.content.replace(new RegExp("(!p )|(!p)"), "");
-
-    if (search.length === 0) {
-      return message.reply("Please provide a song name or a playlist URL.");
-    }
-
+    const [, search] = message.content.split("!p ");
 
     connection.player.connect(connection?.voiceConnection);
 
@@ -79,5 +71,16 @@ export default class P extends Command {
     connection.queue.add(songs);
 
     connection.player.play();
+  }
+
+  public validate(message: Message<boolean>): boolean {
+    const search = message.content.replace(/(!p )|(!p)/, "");
+
+    if (search.length === 0) {
+      message.reply("Please provide a song name or a playlist URL.");
+      return false;
+    }
+
+    return true;
   }
 }

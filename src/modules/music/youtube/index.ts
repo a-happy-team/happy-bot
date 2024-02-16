@@ -13,7 +13,7 @@ export type SearchResult = Array<{
   title: string;
   url: string;
   source: "youtube";
-}>
+}>;
 export default class YoutubeSource {
   SONGS_FOLDER_PATH = path.join(SONGS_FOLDER);
   youtubeSearch: typeof YoutubeSR.YouTube;

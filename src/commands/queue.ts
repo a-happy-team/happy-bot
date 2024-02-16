@@ -6,9 +6,7 @@ export default class Queue extends Command {
   prefix = "!queue";
   description = "Show the current queue.";
 
-  constructor(
-    private readonly connectionManager: ConnectionManager
-  ) {
+  constructor(private readonly connectionManager: ConnectionManager) {
     super();
   }
 
