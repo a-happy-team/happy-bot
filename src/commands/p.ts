@@ -66,7 +66,11 @@ export default class P extends Command {
       skipVotes: new Set(),
     }));
 
-    await connection.youtube.download(message.guildId as string, songs[0]);
+    const downloaded = await connection.youtube.download(message.guildId as string, songs[0]);
+
+    if (!downloaded) {
+      return message.reply("This song is not available, sorry.");
+    }
 
     connection.queue.add(songs);
 

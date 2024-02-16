@@ -2,7 +2,7 @@ export type Song = {
   title: string;
   url: string;
   requestedBy: string;
-  fileName: string | null;
+  fileName: string;
 
   /**
    * The votes to skip the song.
@@ -21,6 +21,10 @@ export default class Queue {
     }
 
     this.songs.push(...songs);
+  }
+
+  remove(fileName: string) {
+    this.songs = this.songs.filter((song) => song.fileName !== fileName);
   }
 
   next() {
