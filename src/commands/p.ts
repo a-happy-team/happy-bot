@@ -37,7 +37,12 @@ export default class P extends Command {
       });
     }
 
-    const [, search] = message.content.split("!p ");
+    const search = message.content.replace(new RegExp("(!p )|(!p)"), "");
+
+    if (search.length === 0) {
+      return message.reply("Please provide a song name or a playlist URL.");
+    }
+
 
     connection.player.connect(connection?.voiceConnection);
 
