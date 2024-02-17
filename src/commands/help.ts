@@ -1,5 +1,5 @@
 import path from "path";
-import { Message } from "discord.js";
+import { EmbedBuilder, Message } from "discord.js";
 import { glob } from "glob";
 import Command from ".";
 
@@ -26,9 +26,11 @@ export default class Help extends Command {
     let helpMessage = "Here are the available commands:\n\n";
 
     commands.forEach((command) => {
-      helpMessage += `\`${command.prefix}\` - ${command.description}\n`;
+      helpMessage += `\`${command.prefix}\` - ${command.description}\n\n`;
     });
 
-    message.reply(helpMessage);
+    const embed = new EmbedBuilder().setDescription(helpMessage).setColor("DarkRed");
+
+    return message.channel.send({ embeds: [embed] });
   }
 }
