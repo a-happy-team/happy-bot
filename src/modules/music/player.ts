@@ -5,6 +5,7 @@ import {
   NoSubscriberBehavior,
   StreamType,
   VoiceConnection,
+  VoiceConnectionStatus,
   createAudioPlayer,
   createAudioResource,
 } from "@discordjs/voice";
@@ -44,6 +45,15 @@ export default class Player {
       behaviors: {
         noSubscriber: NoSubscriberBehavior.Stop,
       },
+    });
+
+    this.connection?.on("stateChange", (oldState, newState) => {
+      const wasReady = oldState.status === VoiceConnectionStatus.Ready;
+      const isConnecting = newState.status === VoiceConnectionStatus.Connecting;
+
+      if (wasReady && isConnecting) {
+        this.connection?.configureNetworking();
+      }
     });
 
     this._player.on("stateChange", (oldState, newState) => {
