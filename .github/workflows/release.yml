@@ -37,8 +37,8 @@ jobs:
     - name: SSH and deploy
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ variables.EC2_SSH_HOST }}
-        username: ${{ variables.EC2_SSH_USER }}
+        host: ${{ vars.EC2_SSH_HOST }}
+        username: ${{ vars.EC2_SSH_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 730335205362.dkr.ecr.us-east-1.amazonaws.com
