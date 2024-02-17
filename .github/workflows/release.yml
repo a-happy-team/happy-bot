@@ -43,5 +43,5 @@ jobs:
           sudo docker run -d --name discord-bot --restart unless-stopped \
             -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
             -e SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} \
-            -e SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CL     IENT_SECRET }} \
+            -e SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }} \
             -d 730335205362.dkr.ecr.us-east-1.amazonaws.com/happy:latest
