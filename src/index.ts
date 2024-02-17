@@ -1,4 +1,3 @@
-import dotenv from "dotenv";
 import HappyClient from "./client";
 import Command from "./commands";
 import Clear from "./commands/clear";
@@ -15,8 +14,6 @@ import YoutubeSource from "./modules/music/youtube";
 
 const main = async () => {
   try {
-    dotenv.config();
-
     const client = new HappyClient();
     const youtube = new YoutubeSource();
     const spotify = new SpotifyClient(
