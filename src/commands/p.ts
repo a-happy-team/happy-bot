@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { Message } from "discord.js";
+import { EmbedBuilder, Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
 import { Song } from "../modules/music/queue";
@@ -40,7 +40,9 @@ export default class P extends Command {
 
     let youtubeSearch: SearchResult | null = null;
 
-    if (connection.spotify.isPlaylistUrl(search)) {
+    const isPlaylist = connection.spotify.isPlaylistUrl(search);
+
+    if (isPlaylist) {
       const tracks = await connection.spotify.getTracks(search);
 
       if (!tracks.length) {
@@ -55,7 +57,7 @@ export default class P extends Command {
     }
 
     if (!youtubeSearch?.length) {
-      return message.reply("No songs found with that name.");
+      return message.reply(isPlaylist ? "No songs found in the playlist." : "No songs found.");
     }
 
     const songs: Song[] = youtubeSearch.map((song) => ({
@@ -68,15 +70,41 @@ export default class P extends Command {
       skipVotes: new Set(),
     }));
 
-    const downloaded = await connection.youtube.download(message.guildId as string, songs[0]);
+    const song = songs[0];
+
+    const downloaded = await connection.youtube.download(message.guildId as string, song);
 
     if (!downloaded) {
-      return message.reply("This song is not available, sorry.");
+      //Be specific whether it's a playlist or a song
+      // return message.reply("This song is not available, sorry.");
+      return message.reply(isPlaylist ? "No songs found in the playlist." : "This song is not available, sorry.");
     }
 
     connection.queue.add(songs);
 
     connection.player.play();
+
+    const embed = new EmbedBuilder()
+      .setAuthor({
+        name: song.title,
+        url: song.url,
+      })
+      .addFields(
+        {
+          name: "Duration",
+          value: song.duration,
+          inline: true,
+        },
+        {
+          name: "Requested by",
+          value: `<@${song.requestedBy}>`,
+          inline: true,
+        },
+      )
+      .setColor("DarkRed")
+      .setImage(song.thumbnail);
+
+    return message.channel.send({ embeds: [embed] });
   }
 
   public validate(message: Message<boolean>): boolean {

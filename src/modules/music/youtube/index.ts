@@ -37,8 +37,8 @@ export default class YoutubeSource {
             ({
               title: video.title || "Unknown",
               url: video.url,
-              duration: search.durationFormatted,
-              thumbnail: search.thumbnail?.url ?? "",
+              duration: video.durationFormatted,
+              thumbnail: video.thumbnail?.url ?? "",
             }) satisfies SearchResult[number],
         );
 
