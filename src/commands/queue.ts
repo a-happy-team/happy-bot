@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
+import MessagesBank from "../services/message/message-embedder";
 
 export default class Queue extends Command {
   prefix = "!queue";
@@ -16,13 +17,19 @@ export default class Queue extends Command {
     const connection = this.connectionManager.getConnection(message);
 
     if (!connection) {
-      return message.reply("I'm not in a voice channel.");
+      return message.channel.send({
+        embeds: [MessagesBank.simple("I'm not in a voice channel.")],
+      });
     }
 
     if (!connection.player.currentSong) {
-      return message.reply("The queue is empty.");
+      return message.channel.send({
+        embeds: [MessagesBank.simple("The queue is empty.")],
+      });
     }
 
-    message.reply(connection.queue.toDiscordMessage());
+    message.channel.send({
+      embeds: [MessagesBank.simple(connection.queue.toDiscordMessage())],
+    });
   }
 }

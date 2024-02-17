@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
+import MessagesBank from "../services/message/message-embedder";
 
 export default class Pause extends Command {
   prefix = "!pause";
@@ -18,7 +19,9 @@ export default class Pause extends Command {
     const connection = this.connectionManager.getConnection(message);
 
     if (notInChannel || isInDifferentChannel || !connection) {
-      return message.reply("You need to be in the same voice channel as me to pause the song.");
+      return message.channel.send({
+        embeds: [MessagesBank.error("You need to be in the same voice channel as the bot to pause the song.")],
+      });
     }
 
     connection.player.pause();
