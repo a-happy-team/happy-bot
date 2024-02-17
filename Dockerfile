@@ -13,6 +13,8 @@ RUN npm run build
 
 FROM base as release
 
+env HUSKY=0
+
 WORKDIR /app
 COPY --from=build /app/dist /app/dist
 COPY package.json package-lock.json /app
