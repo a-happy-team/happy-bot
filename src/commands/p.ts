@@ -4,6 +4,7 @@ import Command from ".";
 import ConnectionManager from "../connection-manager";
 import { Song } from "../modules/music/queue";
 import { SearchResult } from "../modules/music/youtube";
+import { sendMessage } from "../modules/message/message_sender";
 
 export default class P extends Command {
   prefix = "!p";
@@ -87,12 +88,10 @@ export default class P extends Command {
 
     connection.player.play();
 
-    const embed = new EmbedBuilder()
-      .setAuthor({
-        name: song.title,
-        url: song.url,
-      })
-      .addFields(
+    return sendMessage(message, {
+      thumbnail: song.thumbnail,
+      author: { name: song.title, url: song.url },
+      fields: [
         {
           name: "Duration",
           value: song.duration,
@@ -103,11 +102,8 @@ export default class P extends Command {
           value: `<@${song.requestedBy}>`,
           inline: true,
         },
-      )
-      .setColor("DarkRed")
-      .setImage(song.thumbnail);
-
-    return message.channel.send({ embeds: [embed] });
+      ],
+    });
   }
 
   public validate(message: Message<boolean>): boolean {
