@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
+import MessagesBank from "../services/message/message-embedder";
 
 export default class Skip extends Command {
   prefix = "!skip";
@@ -18,15 +19,21 @@ export default class Skip extends Command {
     const connection = this.connectionManager.getConnection(message);
 
     if (notInChannel || isInDifferentChannel || !connection) {
-      return message.reply("You need to be in the same voice channel as the bot to skip the song!");
+      return message.channel.send({
+        embeds: [MessagesBank.error("You need to be in the same voice channel as the bot to skip the song!")],
+      });
     }
 
     if (!connection.player.currentSong) {
-      return message.reply("There is no song to skip!");
+      return message.channel.send({
+        embeds: [MessagesBank.simple("There is no song to skip!")],
+      });
     }
 
     if (connection.queue.alreadyVoted(message.author.id)) {
-      return message.reply("You have already voted to skip this song!");
+      return message.channel.send({
+        embeds: [MessagesBank.simple("You have already voted to skip this song!")],
+      });
     }
 
     /**
@@ -37,11 +44,17 @@ export default class Skip extends Command {
     const wasSkipped = connection.player.skip(message.author.id, membersInChannel);
 
     if (!wasSkipped) {
-      return message.reply(
-        "**Vote to skip** received! You need at least 50% of the members in the voice channel to skip the song.",
-      );
+      return message.channel.send({
+        embeds: [
+          MessagesBank.success(
+            "**Vote to skip** received! You need at least 50% of the members in the voice channel to skip the song.",
+          ),
+        ],
+      });
     }
 
-    return message.reply("The song was skipped!");
+    return message.channel.send({
+      embeds: [MessagesBank.success("The song was skipped!")],
+    });
   }
 }

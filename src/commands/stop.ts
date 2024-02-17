@@ -1,6 +1,7 @@
 import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
+import MessagesBank from "../services/message/message-embedder";
 
 export default class Stop extends Command {
   prefix = "!stop";
@@ -18,7 +19,9 @@ export default class Stop extends Command {
     const connection = this.connectionManager.getConnection(message);
 
     if (notInChannel || isInDifferentChannel || !connection) {
-      return message.reply("You need to be in the same voice channel as the bot to stop the music!");
+      return message.channel.send({
+        embeds: [MessagesBank.error("You need to be in the same voice channel as the bot to stop the music!")],
+      });
     }
 
     this.connectionManager.disconnect(message.guildId as string);

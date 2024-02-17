@@ -4,6 +4,7 @@ import Command from ".";
 import ConnectionManager from "../connection-manager";
 import { Song } from "../modules/music/queue";
 import { SearchResult } from "../modules/music/youtube";
+import MessagesBank from "../services/message/message-embedder";
 
 export default class P extends Command {
   prefix = "!p";
@@ -20,13 +21,17 @@ export default class P extends Command {
     if (!message.member || !message.guild) return;
 
     if (!message.member.voice.channel) {
-      return message.reply("Please join a voice channel to add a song to the queue.");
+      return message.channel.send({
+        embeds: [MessagesBank.error("Please join a voice channel to add a song to the queue.")],
+      });
     }
 
     let connection = this.connectionManager.getConnection(message);
 
     if (connection && !this.connectionManager.isInSameChannel(message)) {
-      return message.reply("You need to be in the same voice channel as the bot to add a song to the queue.");
+      return message.channel.send({
+        embeds: [MessagesBank.error("You need to be in the same voice channel as the bot to add a song to the queue.")],
+      });
     }
 
     if (!connection) {
@@ -49,7 +54,9 @@ export default class P extends Command {
       const tracks = await connection.spotify.getTracks(search);
 
       if (!tracks.length) {
-        return message.reply("No playlist found.");
+        return message.channel.send({
+          embeds: [MessagesBank.error("No playlist found.")],
+        });
       }
 
       youtubeSearch = (await Promise.all(tracks.map((track) => connection?.youtube.search({ search: track.title }))))
@@ -60,7 +67,9 @@ export default class P extends Command {
     }
 
     if (!youtubeSearch?.length) {
-      return message.reply(isPlaylist ? "No songs found in the playlist." : "No songs found.");
+      return message.channel.send({
+        embeds: [MessagesBank.error(isPlaylist ? "No songs found in the playlist." : "No songs found.")],
+      });
     }
 
     const songs: Song[] = youtubeSearch.map((song) => ({
@@ -78,43 +87,29 @@ export default class P extends Command {
     const downloaded = await connection.youtube.download(message.guildId as string, song);
 
     if (!downloaded) {
-      //Be specific whether it's a playlist or a song
-      // return message.reply("This song is not available, sorry.");
-      return message.reply(isPlaylist ? "No songs found in the playlist." : "This song is not available, sorry.");
+      return message.channel.send({
+        embeds: [
+          MessagesBank.error(isPlaylist ? "No songs found in the playlist." : "This song is not available, sorry."),
+        ],
+      });
     }
 
     connection.queue.add(songs);
 
     connection.player.play();
 
-    const embed = new EmbedBuilder()
-      .setAuthor({
-        name: song.title,
-        url: song.url,
-      })
-      .addFields(
-        {
-          name: "Duration",
-          value: song.duration,
-          inline: true,
-        },
-        {
-          name: "Requested by",
-          value: `<@${song.requestedBy}>`,
-          inline: true,
-        },
-      )
-      .setColor("DarkRed")
-      .setImage(song.thumbnail);
-
-    return message.channel.send({ embeds: [embed] });
+    return message.channel.send({
+      embeds: [MessagesBank.newSongAdded(song)],
+    });
   }
 
   public validate(message: Message<boolean>): boolean {
     const search = message.content.replace(/(!p )|(!p)/, "");
 
     if (search.length === 0) {
-      message.reply("Please provide a song name or a playlist URL.");
+      message.channel.send({
+        embeds: [MessagesBank.simple("Please, provide a song name or a playlist URL.")],
+      });
       return false;
     }
 
