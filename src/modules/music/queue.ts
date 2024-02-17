@@ -12,6 +12,7 @@ export type Song = {
    */
   skipVotes: Set<string>;
 };
+
 export default class Queue {
   songs: Song[] = [];
   currentSong: Song | null = null;

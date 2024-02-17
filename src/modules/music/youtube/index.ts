@@ -1,6 +1,6 @@
-import ytdl from "@distube/ytdl-core";
 import fs from "fs";
 import path from "path";
+import ytdl from "@distube/ytdl-core";
 import * as YoutubeSR from "youtube-sr";
 import { SONGS_FOLDER } from "../../../constants";
 import { Song } from "../queue";
@@ -37,8 +37,8 @@ export default class YoutubeSource {
             ({
               title: video.title || "Unknown",
               url: video.url,
-              duration: search.durationFormatted,
-              thumbnail: search.thumbnail?.url ?? "",
+              duration: video.durationFormatted,
+              thumbnail: video.thumbnail?.url ?? "",
             }) satisfies SearchResult[number],
         );
 
@@ -64,24 +64,24 @@ export default class YoutubeSource {
 
   async download(guildId: string, song: Song) {
     try {
-
       const songPath = path.join(this.SONGS_FOLDER_PATH, guildId, `${song.fileName}.mp3`);
-      
+
       if (fs.existsSync(songPath)) {
         return true;
       }
-      
+
       await new Promise((resolve, reject) => {
         ytdl(song.url, { filter: "audioonly", quality: "highestaudio" })
-        .on("error", reject)
-        .pipe(fs.createWriteStream(songPath))
-        .on("finish", resolve)
-        .on("error", reject);
+          .on("error", reject)
+          .pipe(fs.createWriteStream(songPath))
+          .on("finish", resolve)
+          .on("error", reject);
       });
 
-      return true
+      return true;
     } catch (error) {
-      return false
+      console.error(error);
+      return false;
     }
   }
 }
