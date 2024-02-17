@@ -3,3 +3,4 @@ node_modules
 song.mp3
 songs
 dist/
+*.log
