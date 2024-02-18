@@ -16,11 +16,14 @@ jobs:
         secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         account_id: ${{ secrets.AWS_ACCOUNT_ID }}
         repo: happy
-        region: us-east-1
+        region: sa-east-1
         tags: latest
     - name: Remove older images (all images except latest)
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       run: |
-        aws ecr describe-images --repository-name happy --query 'imageDetails[?imageTags[0]!=`latest`].[imageDigest]' --output text --region us-east-1 | xargs -I {} aws ecr batch-delete-image --repository-name happy --image-ids imageDigest={}
+        aws ecr describe-images --repository-name happy --query 'imageDetails[?imageTags[0]!=`latest`].[imageDigest]' --output text --region sa-east-1 | xargs -I {} aws ecr batch-delete-image --repository-name happy --image-ids imageDigest={}
 
   deploy:
     name: Deploy to EC2 via SSH
@@ -37,17 +40,17 @@ jobs:
         username: ${{ vars.EC2_SSH_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          aws ecr get-login-password --region us-east-1 | sudo docker login --username AWS --password-stdin 730335205362.dkr.ecr.us-east-1.amazonaws.com
-          sudo docker pull 730335205362.dkr.ecr.us-east-1.amazonaws.com/happy:latest
-          sudo docker stop discord-bot || true
-          sudo docker rm discord-bot || true
-          sudo docker run -d --name discord-bot --restart unless-stopped \
+          aws ecr get-login-password --region sa-east-1 | docker login --username AWS --password-stdin 730335205362.dkr.ecr.sa-east-1.amazonaws.com
+          docker pull 730335205362.dkr.ecr.sa-east-1.amazonaws.com/happy:latest
+          docker stop discord-bot || true
+          docker rm discord-bot || true
+          docker run -d --name discord-bot --restart unless-stopped \
             -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
             -e SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} \
             -e SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }} \
             -e NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
             -e NEW_RELIC_APP_NAME=${{ vars.NEW_RELIC_APP_NAME }} \
-            -d 730335205362.dkr.ecr.us-east-1.amazonaws.com/happy:latest
+            -d 730335205362.dkr.ecr.sa-east-1.amazonaws.com/happy:latest
 
   notify:
     name: Notify Discord
