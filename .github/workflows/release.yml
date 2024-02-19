@@ -18,12 +18,12 @@ jobs:
         repo: happy
         region: sa-east-1
         tags: latest
-    - name: Remove older images (all images except latest)
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      run: |
-        aws ecr describe-images --repository-name happy --query 'imageDetails[?imageTags[0]!=`latest`].[imageDigest]' --output text --region sa-east-1 | xargs -I {} aws ecr batch-delete-image --repository-name happy --image-ids imageDigest={}
+    # - name: Remove older images (all images except latest)
+    #   env:
+    #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+    #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    #   run: |
+    #     aws ecr describe-images --repository-name happy --query 'imageDetails[?imageTags[0]!=`latest`].[imageDigest]' --output text --region sa-east-1 | xargs -I {} aws ecr batch-delete-image --repository-name happy --image-ids imageDigest={}
 
   deploy:
     name: Deploy to EC2 via SSH
