@@ -1,11 +1,11 @@
 run:
-	docker run -it --rm -v $(PWD):/app -p 3000:3000 sh -c "bash" discord-bot:latest
+	docker run -it --rm -v $(PWD):/app sh -c "bash" discord-bot:latest
 
 dev:
-	docker run -it --rm -v .:/app -p 3000:3000 discord-bot:latest bash
+	docker run -it --rm -v .:/app discord-bot:latest bash
 
 run-dev:
-	docker run -it --rm -v .:/app -p 3000:3000 discord-bot:latest bash -c "npm run dev"
+	docker run -it --rm -v .:/app discord-bot:latest bash -c "npm run dev"
 
 build:
 	docker build -t discord-bot:latest .
