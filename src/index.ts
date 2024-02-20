@@ -1,6 +1,7 @@
 import HappyClient from "./client";
 import Command from "./commands";
 import Clear from "./commands/clear";
+import Commands from "./commands/commands";
 import Help from "./commands/help";
 import P from "./commands/p";
 import Pause from "./commands/pause";
@@ -25,14 +26,17 @@ const main = async () => {
 
     const commands: Command[] = [
       new P(connectionManager),
-      new Skip(connectionManager),
       new Pause(connectionManager),
       new Resume(connectionManager),
+      new Skip(connectionManager),
       new QueueCommand(connectionManager),
       new Help(),
       new Clear(connectionManager),
       new Stop(connectionManager),
+      new Commands(),
     ];
+
+    commands.sort((a, b) => a.prefix.localeCompare(b.prefix));
 
     commands.forEach((command) => client.addCommand(command));
 

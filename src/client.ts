@@ -42,13 +42,17 @@ export default class HappyClient {
   }
 
   addCommand(command: Command) {
-    this.on("messageCreate", (message) => {
+    this.on("messageCreate", async (message) => {
       const prefix = message.content.trim().split(" ")[0];
 
       if (prefix === command.prefix) {
-        if (command.validate(message)) {
+        const isValid = await command.validate(message);
+
+        if (isValid) {
           command.execute(message);
+          // TODO: track command usage
         }
+
         return;
       }
     });

@@ -1,16 +1,21 @@
 import crypto from "crypto";
-import { EmbedBuilder, Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
 import { Song } from "../modules/music/queue";
 import { SearchResult } from "../modules/music/youtube";
 import MessagesBank from "../services/message/message-embedder";
+import { Message } from "discord.js";
 
 export default class P extends Command {
   prefix = "!p";
-  description = `Plays music and accepts two formats:    
-    1. **Song name/artist:** Search and play a specific song. (e.g., \`!p Adele - Skyfall\`)    
-    2. **Playlist URL:** Add all songs from a Youtube or Spotify playlist to the queue. (e.g., \`!p https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M\`)   
+  description = "Plays music and accepts two formats"; 
+  detailedDescription = `Accepts two formats:
+    1. **Song name/artist:** Search and play a specific song.
+       (e.g., \`!p Adele - Skyfall\`)
+    
+    2. **Playlist URL:** Add all songs from a Youtube or Spotify playlist to the queue.
+       (e.g., \`!p https://open.spotify.com/playlist/37i9dQZF1DXcBWIGoYBM5M\`)
+
     If no song is currently playing, the bot will start playing the first song from the playlist or search result.`;
 
   constructor(private readonly connectionManager: ConnectionManager) {
