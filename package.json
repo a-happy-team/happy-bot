@@ -9,6 +9,7 @@
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome check src --apply-unsafe",
+    "db:generate:types": "kysely-codegen --include-pattern=public.*",
     "prepare": "husky || true"
   },
   "keywords": [],
@@ -22,13 +23,17 @@
     "discord.js": "^14.12.1",
     "ffmpeg-static": "^5.2.0",
     "glob": "^10.3.10",
+    "kysely": "^0.27.2",
     "libsodium-wrappers": "^0.7.13",
     "newrelic": "^11.10.4",
+    "pg": "^8.11.3",
     "youtube-sr": "^4.3.10"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@types/pg": "^8.11.0",
     "husky": "^9.0.11",
+    "kysely-codegen": "^0.11.0",
     "lint-staged": "^15.2.2",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
