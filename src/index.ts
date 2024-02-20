@@ -11,6 +11,7 @@ import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
+import { db } from "./services/database/connection";
 
 const main = async () => {
   try {
@@ -21,7 +22,7 @@ const main = async () => {
       process.env.SPOTIFY_CLIENT_SECRET as string,
     );
 
-    const connectionManager = new ConnectionManager(youtube, spotify);
+    const connectionManager = ConnectionManager.getInstance(youtube, spotify, db);
 
     const commands: Command[] = [
       new P(connectionManager),

@@ -1,20 +1,32 @@
 import { VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
+import { Kysely } from "kysely";
+import { DB } from "kysely-codegen";
 import { JoinVoiceChannelParams } from "./client";
 import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
+import SongRepository from "./services/database/repositories/song.repository";
 
 export default class ConnectionManager {
   static instance: ConnectionManager;
   connections: Map<string, Connection>;
 
-  constructor(
+  private constructor(
     public readonly youtube: YoutubeSource,
     public readonly spotify: SpotifyClient,
+    public readonly db: Kysely<DB>,
   ) {
     this.connections = new Map();
+  }
+
+  static getInstance(youtube: YoutubeSource, spotify: SpotifyClient, db: Kysely<DB>) {
+    if (!ConnectionManager.instance) {
+      ConnectionManager.instance = new ConnectionManager(youtube, spotify, db);
+    }
+
+    return ConnectionManager.instance;
   }
 
   joinVoiceChannel(params: JoinVoiceChannelParams) {
@@ -25,7 +37,7 @@ export default class ConnectionManager {
     const voiceConnection = joinVoiceChannel(params);
 
     const queue = new Queue();
-    const player = new Player(queue, this.youtube, this);
+    const player = new Player(queue, this.youtube, this, new SongRepository(this.db));
 
     const newConnection = {
       voiceConnection,
