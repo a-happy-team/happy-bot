@@ -1,5 +1,5 @@
 import { Insertable, Kysely } from "kysely";
-import { DB, Queues } from "kysely-codegen";
+import { DB, Queues } from "../types";
 
 export default class QueueRepository {
   constructor(private db: Kysely<DB>) {}

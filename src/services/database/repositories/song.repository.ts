@@ -1,6 +1,6 @@
 import { Insertable, Kysely } from "kysely";
-import { DB, Songs } from "kysely-codegen";
 import { Try } from "../../../decorators/try";
+import { DB, Songs } from "../types";
 
 export default class SongRepository {
   constructor(private db: Kysely<DB>) {}
@@ -42,12 +42,10 @@ export default class SongRepository {
     }
 
     await this.db
-      .insertInto("song_plays")
+      .insertInto("songPlays")
       .values({
-        guild_id: params.guildId,
-        channel_id: params.channelId,
-        song_id: songId,
-        requested_by: params.requestedBy,
+        ...params,
+        songId,
       })
       .execute();
   }

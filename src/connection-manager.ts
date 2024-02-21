@@ -1,13 +1,13 @@
 import { VoiceConnection, joinVoiceChannel } from "@discordjs/voice";
 import { Message } from "discord.js";
 import { Kysely } from "kysely";
-import { DB } from "kysely-codegen";
 import { JoinVoiceChannelParams } from "./client";
 import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
 import SongRepository from "./services/database/repositories/song.repository";
+import { DB } from "./services/database/types";
 
 export default class ConnectionManager {
   static instance: ConnectionManager;
