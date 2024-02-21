@@ -11,7 +11,10 @@ import {
 } from "@discordjs/voice";
 import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
+import { Try } from "../../decorators/try";
+import SongRepository from "../../services/database/repositories/song.repository";
 import Queue, { Song } from "./queue";
+import SpotifyClient from "./spotify";
 import YoutubeSource from "./youtube";
 
 export default class Player {
@@ -40,6 +43,8 @@ export default class Player {
     private readonly _queue: Queue,
     private readonly youtube: YoutubeSource,
     private readonly connectionManager: ConnectionManager,
+    private readonly spotify: SpotifyClient,
+    private readonly songRepository: SongRepository,
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -48,7 +53,6 @@ export default class Player {
     });
 
     this._player.on("stateChange", (oldState, newState) => {
-      console.log(`[Player] State change: ${oldState.status} -> ${newState.status}`);
       if (newState.status === "idle") {
         this.next();
         this.startDisconnectTimeout();
@@ -104,6 +108,12 @@ export default class Player {
     this.status = "playing";
     this.currentSong = song;
     this.preloadNextSongs(this.PRELOAD_SONGS_COUNT);
+    this.songRepository.recordPlay({
+      url: song.url,
+      guildId: this.connection?.joinConfig.guildId as string,
+      channelId: this.connection?.joinConfig.channelId as string,
+      requestedBy: song.requestedBy,
+    });
   }
 
   resume() {
@@ -187,6 +197,7 @@ export default class Player {
    * Downloads `count` songs from the queue.
    * It's safe to call this method multiple times, as it will only download the songs that are not already downloaded.
    */
+  @Try
   private async preloadNextSongs(count: number) {
     const songs = this._queue.songs.slice(0, count);
 
@@ -203,20 +214,15 @@ export default class Player {
 
   private startDisconnectTimeout() {
     this.disconnectTimeout = setTimeout(() => {
-      console.log("[Player] Disconnecting from voice channel due to inactivity");
       if (this._queue.isEmpty) {
         this.connectionManager.disconnect(this.connection?.joinConfig.guildId ?? "");
       }
     }, this.DISCONNECT_AFTER);
-
-    console.log("[Player] Disconnect timeout started");
   }
   private clearDisconnectTimeout() {
     if (this.disconnectTimeout) {
       clearTimeout(this.disconnectTimeout);
       this.disconnectTimeout = null;
-
-      console.log("[Player] Disconnect timeout cleared");
     }
   }
 }

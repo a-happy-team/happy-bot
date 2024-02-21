@@ -33,6 +33,33 @@ export default class SpotifyClient {
       title: `${track.track.name} - ${track.track.artists[0].name}`,
     }));
   }
+
+  async getTrackInfo(query: string): Promise<TrackInfo | null> {
+    const searchResults = await this.spotifyApi.search(query, ["track"]);
+    const track = searchResults.tracks.items[0];
+
+    if (!track) {
+      return null;
+    }
+
+    const artist = await this.spotifyApi.artists.get(track.artists[0].id);
+
+    if (!artist) {
+      return null;
+    }
+
+    return {
+      title: track.name,
+      artist: artist.name,
+      genre: artist.genres[0],
+    };
+  }
 }
+
+type TrackInfo = {
+  title: string;
+  artist: string;
+  genre: string;
+};
 
 type GetTracksReturn = Array<{ title: string }>;

@@ -48,6 +48,8 @@ jobs:
             -e BOT_TOKEN=${{ secrets.BOT_TOKEN }} \
             -e SPOTIFY_CLIENT_ID=${{ secrets.SPOTIFY_CLIENT_ID }} \
             -e SPOTIFY_CLIENT_SECRET=${{ secrets.SPOTIFY_CLIENT_SECRET }} \
+            -e DATABASE_URL=${{ secrets.DATABASE_URL }} \
+            -e OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }} \
             -e NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
             -e NEW_RELIC_APP_NAME=${{ vars.NEW_RELIC_APP_NAME }} \
             -d 730335205362.dkr.ecr.sa-east-1.amazonaws.com/happy:latest
