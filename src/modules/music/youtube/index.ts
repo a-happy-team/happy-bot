@@ -3,7 +3,9 @@ import path from "path";
 import ytdl from "@distube/ytdl-core";
 import * as YoutubeSR from "youtube-sr";
 import { SONGS_FOLDER } from "../../../constants";
+import SongRepository from "../../../services/database/repositories/song.repository";
 import { Song } from "../queue";
+import SpotifyClient from "../spotify";
 
 export type SearchParams = {
   search: string;
@@ -19,7 +21,10 @@ export default class YoutubeSource {
   SONGS_FOLDER_PATH = path.join(SONGS_FOLDER);
   youtubeSearch: typeof YoutubeSR.YouTube;
 
-  constructor() {
+  constructor(
+    private readonly songRepository: SongRepository,
+    private readonly spotify: SpotifyClient,
+  ) {
     this.youtubeSearch = YoutubeSR.YouTube;
   }
 
@@ -48,8 +53,21 @@ export default class YoutubeSource {
 
     const search = await this.youtubeSearch.searchOne(params.search, "video", true);
 
-    if (!search) {
+    if (!search || !search.title) {
       return null;
+    }
+
+    const trackInfo = await this.spotify.getTrackInfo(search.title);
+
+    console.log({ trackInfo });
+
+    if (trackInfo) {
+      this.songRepository.findOrCreate({
+        name: trackInfo.title,
+        artist: trackInfo.artist,
+        genre: trackInfo.genre,
+        url: search.url,
+      });
     }
 
     return [

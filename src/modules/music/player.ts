@@ -11,7 +11,9 @@ import {
 } from "@discordjs/voice";
 import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
+import SongRepository from "../../services/database/repositories/song.repository";
 import Queue, { Song } from "./queue";
+import SpotifyClient from "./spotify";
 import YoutubeSource from "./youtube";
 
 export default class Player {
@@ -40,6 +42,8 @@ export default class Player {
     private readonly _queue: Queue,
     private readonly youtube: YoutubeSource,
     private readonly connectionManager: ConnectionManager,
+    private readonly spotify: SpotifyClient,
+    private readonly songRepository: SongRepository,
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -104,6 +108,11 @@ export default class Player {
     this.status = "playing";
     this.currentSong = song;
     this.preloadNextSongs(this.PRELOAD_SONGS_COUNT);
+    this.songRepository.recordPlay({
+      url: song.url,
+      guildId: this.connection?.joinConfig.guildId as string,
+      channelId: this.connection?.joinConfig.channelId as string,
+    });
   }
 
   resume() {

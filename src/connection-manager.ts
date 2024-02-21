@@ -37,7 +37,7 @@ export default class ConnectionManager {
     const voiceConnection = joinVoiceChannel(params);
 
     const queue = new Queue();
-    const player = new Player(queue, this.youtube, this, new SongRepository(this.db));
+    const player = new Player(queue, this.youtube, this, this.spotify, new SongRepository(this.db));
 
     const newConnection = {
       voiceConnection,

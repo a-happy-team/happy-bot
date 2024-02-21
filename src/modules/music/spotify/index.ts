@@ -62,8 +62,4 @@ type TrackInfo = {
   genre: string;
 };
 
-new SpotifyClient("888cd697daaa4d3092bc2e0e8f4ff240", "e3875f1141394ac5824bf8f8699677b3")
-  .getTrackInfo("i see fire")
-  .then(console.log);
-
 type GetTracksReturn = Array<{ title: string }>;

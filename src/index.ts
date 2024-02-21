@@ -12,15 +12,17 @@ import ConnectionManager from "./connection-manager";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
 import { db } from "./services/database/connection";
+import SongRepository from "./services/database/repositories/song.repository";
 
 const main = async () => {
   try {
     const client = new HappyClient();
-    const youtube = new YoutubeSource();
     const spotify = new SpotifyClient(
       process.env.SPOTIFY_CLIENT_ID as string,
       process.env.SPOTIFY_CLIENT_SECRET as string,
     );
+    const songRepository = new SongRepository(db);
+    const youtube = new YoutubeSource(songRepository, spotify);
 
     const connectionManager = ConnectionManager.getInstance(youtube, spotify, db);
 
