@@ -53,7 +53,6 @@ export default class Player {
     });
 
     this._player.on("stateChange", (oldState, newState) => {
-      console.log(`[Player] State change: ${oldState.status} -> ${newState.status}`);
       if (newState.status === "idle") {
         this.next();
         this.startDisconnectTimeout();
@@ -215,20 +214,15 @@ export default class Player {
 
   private startDisconnectTimeout() {
     this.disconnectTimeout = setTimeout(() => {
-      console.log("[Player] Disconnecting from voice channel due to inactivity");
       if (this._queue.isEmpty) {
         this.connectionManager.disconnect(this.connection?.joinConfig.guildId ?? "");
       }
     }, this.DISCONNECT_AFTER);
-
-    console.log("[Player] Disconnect timeout started");
   }
   private clearDisconnectTimeout() {
     if (this.disconnectTimeout) {
       clearTimeout(this.disconnectTimeout);
       this.disconnectTimeout = null;
-
-      console.log("[Player] Disconnect timeout cleared");
     }
   }
 }
