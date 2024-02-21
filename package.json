@@ -26,6 +26,7 @@
     "kysely": "^0.27.2",
     "libsodium-wrappers": "^0.7.13",
     "newrelic": "^11.10.4",
+    "openai": "^4.28.0",
     "pg": "^8.11.3",
     "youtube-sr": "^4.3.10"
   },
