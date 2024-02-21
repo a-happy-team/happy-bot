@@ -1,9 +1,11 @@
 import { Insertable, Kysely } from "kysely";
 import { DB, Songs } from "kysely-codegen";
+import { Try } from "../../../decorators/try";
 
 export default class SongRepository {
   constructor(private db: Kysely<DB>) {}
 
+  @Try
   async insert(song: Insertable<Songs>) {
     return this.db
       .insertInto("songs")
@@ -14,6 +16,7 @@ export default class SongRepository {
       .executeTakeFirst();
   }
 
+  @Try
   async findOrCreate(song: Insertable<Songs>) {
     const songOrNull = await this.db.selectFrom("songs").where("url", "=", song.url).selectAll().executeTakeFirst();
 
@@ -24,6 +27,7 @@ export default class SongRepository {
     return this.insert(song);
   }
 
+  @Try
   async recordPlay(params: RecordPlayParams) {
     let songId: string | null = "songId" in params ? params.songId : null;
 
@@ -31,7 +35,7 @@ export default class SongRepository {
       const song = await this.db.selectFrom("songs").where("url", "=", params.url).select("id").executeTakeFirst();
 
       if (!song) {
-        throw new Error("Song not found");
+        throw new Error("Song not found.");
       }
 
       songId = song.id;
@@ -43,7 +47,7 @@ export default class SongRepository {
         guild_id: params.guildId,
         channel_id: params.channelId,
         song_id: songId,
-        is_from_playlist: false,
+        requested_by: params.requestedBy,
       })
       .execute();
   }
@@ -54,9 +58,11 @@ type RecordPlayParams =
       url: string;
       guildId: string;
       channelId: string;
+      requestedBy: string;
     }
   | {
       songId: string;
       guildId: string;
       channelId: string;
+      requestedBy: string;
     };
