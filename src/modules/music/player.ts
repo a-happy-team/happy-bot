@@ -197,8 +197,7 @@ export default class Player {
    * Downloads `count` songs from the queue.
    * It's safe to call this method multiple times, as it will only download the songs that are not already downloaded.
    */
-  @Try
-  private async preloadNextSongs(count: number) {
+  @Try private async preloadNextSongs(count: number) {
     const songs = this._queue.songs.slice(0, count);
 
     await Promise.all(
