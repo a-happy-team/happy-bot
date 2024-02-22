@@ -14,7 +14,6 @@ import { SONGS_FOLDER } from "../../constants";
 import { Try } from "../../decorators/try";
 import SongRepository from "../../services/database/repositories/song.repository";
 import Queue, { Song } from "./queue";
-import SpotifyClient from "./spotify";
 import YoutubeSource from "./youtube";
 
 export default class Player {
@@ -43,7 +42,6 @@ export default class Player {
     private readonly _queue: Queue,
     private readonly youtube: YoutubeSource,
     private readonly connectionManager: ConnectionManager,
-    private readonly spotify: SpotifyClient,
     private readonly songRepository: SongRepository,
   ) {
     this._player = createAudioPlayer({
@@ -53,7 +51,7 @@ export default class Player {
     });
 
     this._player.on("stateChange", (oldState, newState) => {
-      if (newState.status === "idle") {
+      if (newState.status === "idle" && this.status === "playing") {
         this.next();
         this.startDisconnectTimeout();
       }
