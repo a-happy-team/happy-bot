@@ -30,8 +30,7 @@ export default class YoutubeSource {
     this.youtubeSearch = YoutubeSR.YouTube;
   }
 
-  @Try
-  async search(params: SearchParams): Promise<SearchResult | null> {
+  @Try async search(params: SearchParams): Promise<SearchResult | null> {
     const YOUTUBE_PLAYLIST_REGEX = /^.*(youtu.be\/|list=)([^#\&\?]*).*/;
 
     const isPlaylist = YOUTUBE_PLAYLIST_REGEX.test(params.search);
@@ -82,8 +81,7 @@ export default class YoutubeSource {
     ];
   }
 
-  @Try
-  async download(guildId: string, song: Song) {
+  @Try async download(guildId: string, song: Song) {
     const songPath = path.join(this.SONGS_FOLDER_PATH, guildId, `${song.fileName}.mp3`);
 
     if (fs.existsSync(songPath)) {

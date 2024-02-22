@@ -1,14 +1,16 @@
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
-export const Try = (originalMethod: any, context: ClassMethodDecoratorContext) => {
-  const original = originalMethod.descriptor.value;
-  const methodName = context.name.toString();
-
-  originalMethod.descriptor.value = async function (...args: []) {
+export function Try(
+  // biome-ignore lint/complexity/noBannedTypes: <explanation>
+  originalMethod: Function,
+  context: ClassMethodDecoratorContext,
+) {
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+  async function replacementMethod(this: any, ...args: any) {
     try {
-      return await original.apply(this, args);
+      return await originalMethod.call(this, args);
     } catch (error) {
-      console.error(`Error in ${methodName}: ${(error as Error).message}`);
-      return null;
+      console.error(error);
     }
-  };
-};
+  }
+
+  return replacementMethod;
+}

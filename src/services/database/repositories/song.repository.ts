@@ -5,8 +5,7 @@ import { DB, Songs } from "../types";
 export default class SongRepository {
   constructor(private db: Kysely<DB>) {}
 
-  @Try
-  async insert(song: Insertable<Songs>) {
+  @Try async insert(song: Insertable<Songs>) {
     return this.db
       .insertInto("songs")
       .values({
@@ -16,8 +15,7 @@ export default class SongRepository {
       .executeTakeFirst();
   }
 
-  @Try
-  async findOrCreate(song: Insertable<Songs>) {
+  @Try async findOrCreate(song: Insertable<Songs>) {
     const songOrNull = await this.db.selectFrom("songs").where("url", "=", song.url).selectAll().executeTakeFirst();
 
     if (songOrNull) {
@@ -27,8 +25,7 @@ export default class SongRepository {
     return this.insert(song);
   }
 
-  @Try
-  async recordPlay(params: RecordPlayParams) {
+  @Try async recordPlay(params: RecordPlayParams) {
     let songId: string | null = "songId" in params ? params.songId : null;
 
     if ("url" in params) {
