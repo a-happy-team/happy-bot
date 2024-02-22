@@ -99,8 +99,8 @@ export default class YoutubeSource {
     const openAIKey = process.env.OPENAI_API_KEY;
 
     if (!openAIKey) {
-      console.log("OpenAI API key not found, return false");
-      return false;
+      console.log("OpenAI API key not found");
+      return;
     }
 
     const isSameSong = await new OpenAI().isSameSong(title, trackInfo);
