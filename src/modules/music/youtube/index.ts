@@ -60,17 +60,7 @@ export default class YoutubeSource {
     }
 
     if (search.title) {
-      const trackInfo = await this.spotify.getTrackInfo(search.title);
-      const isSameSong = await new OpenAI().isSameSong(search.title, trackInfo);
-
-      if (trackInfo && isSameSong) {
-        this.songRepository.findOrCreate({
-          name: trackInfo.title,
-          artist: trackInfo.artist,
-          genre: trackInfo.genre,
-          url: search.url,
-        });
-      }
+      this.storeTrackInfo({ title: search.title, url: search.url });
     }
 
     return [
@@ -99,5 +89,21 @@ export default class YoutubeSource {
     });
 
     return true;
+  }
+
+  @Try private async storeTrackInfo(params: { title: string; url: string }) {
+    const { title, url } = params;
+
+    const trackInfo = await this.spotify.getTrackInfo(title);
+    const isSameSong = await new OpenAI().isSameSong(title, trackInfo);
+
+    if (trackInfo && isSameSong) {
+      this.songRepository.findOrCreate({
+        name: trackInfo.title,
+        artist: trackInfo.artist,
+        genre: trackInfo.genre,
+        url,
+      });
+    }
   }
 }
