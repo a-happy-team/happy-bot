@@ -6,9 +6,11 @@ export function Try(
   // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   async function replacementMethod(this: any, ...args: any) {
     try {
-      return await originalMethod.call(this, args);
+      return await originalMethod.call(this, ...args);
     } catch (error) {
       console.error(error);
+
+      return null;
     }
   }
 

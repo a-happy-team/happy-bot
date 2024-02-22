@@ -41,7 +41,9 @@ export default class SongRepository {
     await this.db
       .insertInto("songPlays")
       .values({
-        ...params,
+        channelId: params.channelId,
+        guildId: params.guildId,
+        requestedBy: params.requestedBy,
         songId,
       })
       .execute();

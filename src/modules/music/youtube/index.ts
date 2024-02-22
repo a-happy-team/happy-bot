@@ -55,20 +55,22 @@ export default class YoutubeSource {
 
     const search = await this.youtubeSearch.searchOne(params.search, "video", true);
 
-    if (!search || !search.title) {
+    if (!search) {
       return null;
     }
 
-    const trackInfo = await this.spotify.getTrackInfo(search.title);
-    const isSameSong = await new OpenAI().isSameSong(search.title, trackInfo);
+    if (search.title) {
+      const trackInfo = await this.spotify.getTrackInfo(search.title);
+      const isSameSong = await new OpenAI().isSameSong(search.title, trackInfo);
 
-    if (trackInfo && isSameSong) {
-      this.songRepository.findOrCreate({
-        name: trackInfo.title,
-        artist: trackInfo.artist,
-        genre: trackInfo.genre,
-        url: search.url,
-      });
+      if (trackInfo && isSameSong) {
+        this.songRepository.findOrCreate({
+          name: trackInfo.title,
+          artist: trackInfo.artist,
+          genre: trackInfo.genre,
+          url: search.url,
+        });
+      }
     }
 
     return [
