@@ -95,6 +95,14 @@ export default class YoutubeSource {
     const { title, url } = params;
 
     const trackInfo = await this.spotify.getTrackInfo(title);
+
+    const openAIKey = process.env.OPENAI_API_KEY;
+
+    if (!openAIKey) {
+      console.log("OpenAI API key not found");
+      return;
+    }
+
     const isSameSong = await new OpenAI().isSameSong(title, trackInfo);
 
     if (trackInfo && isSameSong) {
