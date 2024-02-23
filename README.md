@@ -16,6 +16,7 @@ Happy is a Discord Bot that begin as a spare time project to implement a music b
 BOT_TOKEN=<your bot token>
 SPOTIFY_CLIENT_ID=<your spotify client id>
 SPOTIFY_CLIENT_SECRET=<your spotify client secret>
+DATABASE_URL=
 ```
 In case you don't have any of these tokens, you can create a bot and get a token from the [Discord Developer Portal](https://discord.com/developers/applications) and you can get the Spotify tokens from the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications).
 

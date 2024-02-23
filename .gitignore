@@ -4,3 +4,4 @@ song.mp3
 songs
 dist/
 *.log
+schema.sql

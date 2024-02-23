@@ -10,6 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome check src --apply-unsafe",
     "db:generate:types": "kysely-codegen --include-pattern=public.* --dialect=postgres --camel-case --out-file=./src/services/database/types.d.ts",
+    "db:generate:schema": "npx supabase dump --db-url=\"$SUPABASE_URL\" -f schema.sql",
     "prepare": "husky || true"
   },
   "keywords": [],
