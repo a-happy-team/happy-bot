@@ -15,7 +15,7 @@ export interface Commands {
   usageCount: Generated<Int8>;
 }
 
-export interface CommandUsage {
+export interface CommandUsages {
   channelId: string;
   commandId: string | null;
   createdAt: Generated<Timestamp>;
@@ -55,7 +55,7 @@ export interface Songs {
 
 export interface DB {
   commands: Commands;
-  commandUsage: CommandUsage;
+  commandUsages: CommandUsages;
   queues: Queues;
   songPlays: SongPlays;
   songs: Songs;
