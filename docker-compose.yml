@@ -1,0 +1,27 @@
+version: "3.0"
+
+services:
+  happy_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: build
+    command: npm run dev
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    network_mode: "host"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: happy_bot
+    volumes:
+      - ./schema.sql:/tmp/schema.sql
+    ports:
+      - "5432:5432"
