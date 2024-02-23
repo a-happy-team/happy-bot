@@ -6,7 +6,7 @@ import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
-import SongPlayRepository from "./services/database/repositories/song-plays.repository";
+import SongPlayRepository from "./services/database/repositories/song-play.repository";
 import { DB } from "./services/database/types";
 
 export default class ConnectionManager {

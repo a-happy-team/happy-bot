@@ -25,41 +25,26 @@ export default class SongRepository {
     return this.insert(song);
   }
 
-  @Try async recordPlay(params: RecordPlayParams) {
-    let songId: string | null = "songId" in params ? params.songId : null;
+  @Try async updatePlayedCount(params: UpdatePlayedCountParams) {
+    const song = await this.db
+      .selectFrom("songs")
+      .where("id", "=", params.songId)
+      .select("playedCount")
+      .executeTakeFirst();
 
-    if ("url" in params) {
-      const song = await this.db.selectFrom("songs").where("url", "=", params.url).select("id").executeTakeFirst();
-
-      if (!song) {
-        throw new Error("Song not found.");
-      }
-
-      songId = song.id;
+    if (!song) {
+      throw new Error("Song not found.");
     }
 
-    await this.db
-      .insertInto("songPlays")
-      .values({
-        channelId: params.channelId,
-        guildId: params.guildId,
-        requestedBy: params.requestedBy,
-        songId,
-      })
+    return this.db
+      .updateTable("songs")
+      .set("playedCount", song?.playedCount + params.count)
+      .where("id", "=", params.songId)
       .execute();
   }
 }
 
-type RecordPlayParams =
-  | {
-      url: string;
-      guildId: string;
-      channelId: string;
-      requestedBy: string;
-    }
-  | {
-      songId: string;
-      guildId: string;
-      channelId: string;
-      requestedBy: string;
-    };
+type UpdatePlayedCountParams = {
+  songId: string;
+  count: number;
+};

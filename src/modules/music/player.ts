@@ -12,7 +12,7 @@ import {
 import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
 import { Try } from "../../decorators/try";
-import SongPlayRepository from "../../services/database/repositories/song-plays.repository";
+import SongPlayRepository from "../../services/database/repositories/song-play.repository";
 import Queue, { Song } from "./queue";
 import YoutubeSource from "./youtube";
 
