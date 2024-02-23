@@ -30,6 +30,8 @@ The intentions required for the bot are:
 - `Server Members Intent`
 - `Message Content Intent`
 
-3. Run `make build` to build the docker image (if you're on Windows, you can run open the `Makefile` and run the command in the `build` target in the terminal)
-
-4. Run `make run-dev` to run the docker container (if you're on Windows, you can run open the `Makefile` and run the command in the `run-dev` target in the terminal)
+3. Cloning Supabase db Scheme:
+- Ask the SUPABASE database URL
+- ``SUPABASE_URL=databaseUrl npm run db:generate:schema``
+- ``docker compose up -d``
+- ``docker compose exec db sh -c "psql -U postgres -d happy_bot < /tmp/schema.sql"``
