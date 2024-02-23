@@ -57,6 +57,7 @@ jobs:
             -e NEW_RELIC_LICENSE_KEY=${{ secrets.NEW_RELIC_LICENSE_KEY }} \
             -e NEW_RELIC_APP_NAME=${{ vars.NEW_RELIC_APP_NAME }} \
             -d ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ vars.AWS_REGION }}.amazonaws.com/happy:latest
+          docker system prune -f
     - name: Delete old ECR images
       run: |
         aws ecr batch-delete-image --repository-name happy --region ${{ vars.AWS_REGION }} --image-ids imageTag=latest
