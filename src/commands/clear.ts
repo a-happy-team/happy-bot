@@ -4,7 +4,7 @@ import ConnectionManager from "../connection-manager";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Clear extends Command {
-  prefix = "!clear";
+  name = "!clear";
   description = "Clear the queue.";
 
   constructor(private readonly connectionManager: ConnectionManager) {

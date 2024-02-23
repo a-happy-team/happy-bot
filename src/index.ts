@@ -43,7 +43,7 @@ const main = async () => {
       new Commands(),
     ];
 
-    commands.sort((a, b) => a.prefix.localeCompare(b.prefix));
+    commands.sort((a, b) => a.name.localeCompare(b.name));
 
     commands.forEach((command) => client.addCommand(command));
 

@@ -4,7 +4,7 @@ import ConnectionManager from "../connection-manager";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Queue extends Command {
-  prefix = "!queue";
+  name = "!queue";
   description = "Show the current queue.";
 
   constructor(private readonly connectionManager: ConnectionManager) {

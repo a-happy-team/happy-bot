@@ -5,7 +5,7 @@ import Command from ".";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Commands extends Command {
-  prefix = "!commands";
+  name = "!commands";
   description = "Shows all available commands";
 
   async execute(message: Message) {

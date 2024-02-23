@@ -5,7 +5,7 @@ import Command from ".";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Help extends Command {
-  prefix = "!help";
+  name = "!help";
   description = "Shows detailed information about a specific command";
 
   async execute(message: Message) {
@@ -25,10 +25,10 @@ export default class Help extends Command {
 
     const search = message.content.replace(/(!help )|(!help)/, "");
 
-    const command = commands.find((command) => command.prefix.replace("!", "") === search.replace("!", ""));
+    const command = commands.find((command) => command.name.replace("!", "") === search.replace("!", ""));
 
     if (command) {
-      const helpMessage = `**${command.prefix}** - ${command.detailedDescription ?? command.description}`;
+      const helpMessage = `**${command.name}** - ${command.detailedDescription ?? command.description}`;
 
       return message.channel.send({ embeds: [MessagesBank.simple(helpMessage)] });
     }
@@ -63,7 +63,7 @@ export default class Help extends Command {
       }),
     );
 
-    const command = commands.find((command) => command.prefix.replace("!", "") === search.replace("!", ""));
+    const command = commands.find((command) => command.name.replace("!", "") === search.replace("!", ""));
 
     if (command) {
       return true;

@@ -1,7 +1,7 @@
 import { Message } from "discord.js";
 
 export default abstract class Command {
-  abstract prefix: string;
+  abstract name: string;
   abstract description: string;
   public detailedDescription?: string;
 

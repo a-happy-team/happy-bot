@@ -4,7 +4,7 @@ import ConnectionManager from "../connection-manager";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Skip extends Command {
-  prefix = "!skip";
+  name = "!skip";
   description = "Skip the current song. If there are no songs in the queue, the bot will leave the voice channel.";
 
   constructor(private readonly connectionManager: ConnectionManager) {

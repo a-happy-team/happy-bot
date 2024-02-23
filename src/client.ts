@@ -45,7 +45,7 @@ export default class HappyClient {
     this.on("messageCreate", async (message) => {
       const prefix = message.content.trim().split(" ")[0];
 
-      if (prefix === command.prefix) {
+      if (prefix === command.name) {
         const isValid = await command.validate(message);
 
         if (isValid) {

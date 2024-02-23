@@ -8,6 +8,23 @@ export type Int8 = ColumnType<string, bigint | number | string, bigint | number 
 
 export type Timestamp = ColumnType<Date, Date | string, Date | string>;
 
+export interface Commands {
+  createdAt: Generated<Timestamp>;
+  id: Generated<string>;
+  name: string;
+  usageCount: Generated<Int8>;
+}
+
+export interface CommandUsage {
+  channelId: string;
+  commandId: string | null;
+  createdAt: Generated<Timestamp>;
+  guildId: string;
+  id: Generated<string>;
+  processedAt: Timestamp | null;
+  usedBy: string;
+}
+
 export interface Queues {
   addedAt: Generated<Timestamp>;
   channelId: string;
@@ -37,6 +54,8 @@ export interface Songs {
 }
 
 export interface DB {
+  commands: Commands;
+  commandUsage: CommandUsage;
   queues: Queues;
   songPlays: SongPlays;
   songs: Songs;

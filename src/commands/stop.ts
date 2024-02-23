@@ -4,7 +4,7 @@ import ConnectionManager from "../connection-manager";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Stop extends Command {
-  prefix = "!stop";
+  name = "!stop";
   description = "Stop the music and remove the bot from the channel.";
 
   constructor(private readonly connectionManager: ConnectionManager) {
