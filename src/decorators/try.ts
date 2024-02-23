@@ -4,7 +4,7 @@ export function Try(
   context: ClassMethodDecoratorContext,
 ) {
   // biome-ignore lint/suspicious/noExplicitAny: When typing decorators this doesn't really matter hassle
-  async function replacementMethod(this: any, ...args: any) {
+  return async function (this: any, ...args: any) {
     try {
       return await originalMethod.call(this, ...args);
     } catch (error) {
@@ -12,7 +12,5 @@ export function Try(
 
       return null;
     }
-  }
-
-  return replacementMethod;
+  };
 }
