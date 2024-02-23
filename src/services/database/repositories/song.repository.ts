@@ -38,7 +38,7 @@ export default class SongRepository {
 
     return this.db
       .updateTable("songs")
-      .set("playedCount", song?.playedCount + params.count)
+      .set("playedCount", Number(song?.playedCount) + params.count)
       .where("id", "=", params.songId)
       .execute();
   }
