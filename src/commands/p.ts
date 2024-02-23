@@ -1,14 +1,14 @@
 import crypto from "crypto";
+import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager from "../connection-manager";
 import { Song } from "../modules/music/queue";
 import { SearchResult } from "../modules/music/youtube";
 import MessagesBank from "../services/message/message-embedder";
-import { Message } from "discord.js";
 
 export default class P extends Command {
   prefix = "!p";
-  description = "Plays music and accepts two formats"; 
+  description = "Plays music, accepts playlist URLs and song names, separated by commas.";
   detailedDescription = `Accepts two formats:
     1. **Song name/artist:** Search and play a specific song.
        (e.g., \`!p Adele - Skyfall\`)
