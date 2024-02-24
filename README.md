@@ -33,5 +33,14 @@ The intentions required for the bot are:
 3. Cloning Supabase db Scheme:
 - Ask the SUPABASE database URL
 - ``SUPABASE_URL=databaseUrl npm run db:generate:schema``
+
+4. Run docker
 - ``docker compose up -d``
 - ``docker compose exec db sh -c "psql -U postgres -d happy_bot < /tmp/schema.sql"``
+
+3.1 Accesing the local database
+- Get the containerID running on docker: ``docker ps | grep discord-bot | grep db | awk '{print $1}'``
+- ``docker exec -it <container_id> psql -U postgres postgres``
+- Connect to the bot db: ``\c happy_bot``
+- To list all tables run: ``\dt``
+- ``SELECT * FROM <table_name>;`` DO NOT FORGET THE ";"

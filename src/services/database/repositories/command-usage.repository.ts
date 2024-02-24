@@ -8,7 +8,7 @@ export default class CommandUsageRepository {
   @Try async add(params: RecordUsageParams) {
     const commandId = params.commandId;
 
-    this.db
+    await this.db
       .insertInto("commandUsages")
       .values({
         channelId: params.channelId,

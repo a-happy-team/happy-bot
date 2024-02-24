@@ -13,6 +13,7 @@ export default class CommandRepository {
         name: command.name.toLowerCase(),
         usageCount: command.usageCount,
       })
+      .returningAll()
       .executeTakeFirst();
   }
 

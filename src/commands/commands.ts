@@ -16,7 +16,7 @@ export default class Commands extends Command {
       ignore: ["**/index.[jt]s", "**/commands.[jt]s"],
     });
 
-    const commands = await Promise.all(
+    const commands: Command[] = await Promise.all(
       files.map(async (file) => {
         const command = await import(file);
 
@@ -27,7 +27,7 @@ export default class Commands extends Command {
     let helpMessage = "Here are the available commands:\n\n";
 
     commands.forEach((command) => {
-      helpMessage += `\`${command.prefix}\` - ${command.description}\n\n`;
+      helpMessage += `\`${command.name}\` - ${command.description}\n\n`;
     });
 
     return message.channel.send({ embeds: [MessagesBank.simple(helpMessage)] });

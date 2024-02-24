@@ -1,6 +1,10 @@
 import { DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { ActivityType, Client, GatewayIntentBits, Message } from "discord.js";
 import Command from "./commands";
+import { Try } from "./decorators/try";
+import { db } from "./services/database/connection";
+import CommandUsageRepository from "./services/database/repositories/command-usage.repository";
+import CommandRepository from "./services/database/repositories/command.repository";
 
 type EventMap = {
   ready: Array<() => void>;
@@ -11,6 +15,8 @@ type Event = keyof EventMap;
 
 export default class HappyClient {
   discordClient: Client;
+  commandsRepo = new CommandRepository(db);
+  commandsUsageRepo = new CommandUsageRepository(db);
 
   events: EventMap = {
     ready: [],
@@ -50,7 +56,7 @@ export default class HappyClient {
 
         if (isValid) {
           command.execute(message);
-          // TODO: track command usage
+          this.recordCommandUsage(command, message);
         }
 
         return;
@@ -70,6 +76,27 @@ export default class HappyClient {
     });
 
     this.discordClient.login(process.env.BOT_TOKEN);
+  }
+
+  @Try async recordCommandUsage(command: Command, message: Message) {
+    const dbCommand = await this.commandsRepo.findOrCreate({
+      name: command.name,
+    });
+
+    if (!dbCommand) {
+      throw new Error("Command not found");
+    }
+
+    this.commandsUsageRepo
+      .add({
+        channelId: message.channel.id,
+        guildId: message.guild?.id ?? "UNKNOWN",
+        usedBy: message.author.id,
+        commandId: dbCommand.id,
+      })
+      .then(() => {
+        console.log(`${command.name} - Command usage recorded`);
+      });
   }
 }
 
