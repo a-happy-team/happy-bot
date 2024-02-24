@@ -16,6 +16,7 @@ Happy is a Discord Bot that begin as a spare time project to implement a music b
 BOT_TOKEN=<your bot token>
 SPOTIFY_CLIENT_ID=<your spotify client id>
 SPOTIFY_CLIENT_SECRET=<your spotify client secret>
+DATABASE_URL=
 ```
 In case you don't have any of these tokens, you can create a bot and get a token from the [Discord Developer Portal](https://discord.com/developers/applications) and you can get the Spotify tokens from the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/applications).
 
@@ -29,6 +30,8 @@ The intentions required for the bot are:
 - `Server Members Intent`
 - `Message Content Intent`
 
-3. Run `make build` to build the docker image (if you're on Windows, you can run open the `Makefile` and run the command in the `build` target in the terminal)
-
-4. Run `make run-dev` to run the docker container (if you're on Windows, you can run open the `Makefile` and run the command in the `run-dev` target in the terminal)
+3. Cloning Supabase db Scheme:
+- Ask the SUPABASE database URL
+- ``SUPABASE_URL=databaseUrl npm run db:generate:schema``
+- ``docker compose up -d``
+- ``docker compose exec db sh -c "psql -U postgres -d happy_bot < /tmp/schema.sql"``

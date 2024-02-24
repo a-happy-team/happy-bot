@@ -6,7 +6,7 @@ import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
-import SongRepository from "./services/database/repositories/song.repository";
+import SongPlayRepository from "./services/database/repositories/song-play.repository";
 import { DB } from "./services/database/types";
 
 export default class ConnectionManager {
@@ -37,7 +37,7 @@ export default class ConnectionManager {
     const voiceConnection = joinVoiceChannel(params);
 
     const queue = new Queue();
-    const player = new Player(queue, this.youtube, this, new SongRepository(this.db));
+    const player = new Player(queue, this.youtube, this, new SongPlayRepository(this.db));
 
     const newConnection = {
       voiceConnection,

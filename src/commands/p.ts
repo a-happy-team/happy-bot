@@ -8,7 +8,7 @@ import MessagesBank from "../services/message/message-embedder";
 
 export default class P extends Command {
   prefix = "!p";
-  description = "Plays music and accepts two formats";
+  description = "Plays music, accepts playlist URLs and song names, separated by commas.";
   detailedDescription = `Accepts two formats:
     1. **Song name/artist:** Search and play a specific song.
        (e.g., \`!p Adele - Skyfall\`)

@@ -12,7 +12,7 @@ import {
 import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
 import { Try } from "../../decorators/try";
-import SongRepository from "../../services/database/repositories/song.repository";
+import SongPlayRepository from "../../services/database/repositories/song-play.repository";
 import Queue, { Song } from "./queue";
 import YoutubeSource from "./youtube";
 
@@ -42,7 +42,7 @@ export default class Player {
     private readonly _queue: Queue,
     private readonly youtube: YoutubeSource,
     private readonly connectionManager: ConnectionManager,
-    private readonly songRepository: SongRepository,
+    private readonly songPlayRepository: SongPlayRepository,
   ) {
     this._player = createAudioPlayer({
       behaviors: {
@@ -106,7 +106,7 @@ export default class Player {
     this.status = "playing";
     this.currentSong = song;
     this.preloadNextSongs(this.PRELOAD_SONGS_COUNT);
-    this.songRepository.recordPlay({
+    this.songPlayRepository.add({
       url: song.url,
       guildId: this.connection?.joinConfig.guildId as string,
       channelId: this.connection?.joinConfig.channelId as string,

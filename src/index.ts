@@ -12,7 +12,9 @@ import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
 import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
+import Cron from "./services/cron";
 import { db } from "./services/database/connection";
+import SongPlayRepository from "./services/database/repositories/song-play.repository";
 import SongRepository from "./services/database/repositories/song.repository";
 
 const main = async () => {
@@ -23,7 +25,9 @@ const main = async () => {
       process.env.SPOTIFY_CLIENT_SECRET as string,
     );
     const songRepository = new SongRepository(db);
+    const songPlayRepository = new SongPlayRepository(db);
     const youtube = new YoutubeSource(songRepository, spotify);
+    const cronJobs = new Cron(songRepository, songPlayRepository);
 
     const connectionManager = ConnectionManager.getInstance(youtube, spotify, db);
 
@@ -43,6 +47,7 @@ const main = async () => {
 
     commands.forEach((command) => client.addCommand(command));
 
+    cronJobs.initialize();
     client.login();
   } catch (error) {
     console.error(error);

@@ -10,6 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "biome check src --apply-unsafe",
     "db:generate:types": "kysely-codegen --include-pattern=public.* --dialect=postgres --camel-case --out-file=./src/services/database/types.d.ts",
+    "db:generate:schema": "npx supabase db dump --db-url=\"$SUPABASE_URL\" -f schema.sql",
     "prepare": "husky || true"
   },
   "keywords": [],
@@ -20,6 +21,7 @@
     "@discordjs/voice": "^0.16.1",
     "@distube/ytdl-core": "^4.13.3",
     "@spotify/web-api-ts-sdk": "^1.2.0",
+    "cron": "^3.1.6",
     "discord.js": "^14.12.1",
     "ffmpeg-static": "^5.2.0",
     "glob": "^10.3.10",
