@@ -4,7 +4,7 @@ import ConnectionManager from "../connection-manager";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Resume extends Command {
-  prefix = "!resume";
+  name = "!resume";
   description = "Resume the current song if it's paused.";
 
   constructor(private readonly connectionManager: ConnectionManager) {

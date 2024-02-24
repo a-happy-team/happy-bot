@@ -4,7 +4,7 @@ import ConnectionManager from "../connection-manager";
 import MessagesBank from "../services/message/message-embedder";
 
 export default class Pause extends Command {
-  prefix = "!pause";
+  name = "!pause";
   description = "Pause the current song. Use !resume to continue playing the song.";
 
   constructor(private readonly connectionManager: ConnectionManager) {

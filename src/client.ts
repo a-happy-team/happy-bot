@@ -1,6 +1,10 @@
 import { DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { ActivityType, Client, GatewayIntentBits, Message } from "discord.js";
 import Command from "./commands";
+import { Try } from "./decorators/try";
+import { db } from "./services/database/connection";
+import CommandUsageRepository from "./services/database/repositories/command-usage.repository";
+import CommandRepository from "./services/database/repositories/command.repository";
 
 type EventMap = {
   ready: Array<() => void>;
@@ -17,7 +21,10 @@ export default class HappyClient {
     messageCreate: [],
   };
 
-  constructor() {
+  constructor(
+    public readonly commandsRepo: CommandRepository,
+    public readonly commandsUsageRepo: CommandUsageRepository,
+  ) {
     this.discordClient = new Client({
       intents: [
         GatewayIntentBits.Guilds,
@@ -45,12 +52,12 @@ export default class HappyClient {
     this.on("messageCreate", async (message) => {
       const prefix = message.content.trim().split(" ")[0];
 
-      if (prefix === command.prefix) {
+      if (prefix === command.name) {
         const isValid = await command.validate(message);
 
         if (isValid) {
           command.execute(message);
-          // TODO: track command usage
+          this.recordCommandUsage(command, message);
         }
 
         return;
@@ -70,6 +77,27 @@ export default class HappyClient {
     });
 
     this.discordClient.login(process.env.BOT_TOKEN);
+  }
+
+  @Try async recordCommandUsage(command: Command, message: Message) {
+    const dbCommand = await this.commandsRepo.findOrCreate({
+      name: command.name,
+    });
+
+    if (!dbCommand) {
+      throw new Error("Command not found");
+    }
+
+    await this.commandsUsageRepo
+      .add({
+        channelId: message.channel.id,
+        guildId: message.guild?.id ?? "UNKNOWN",
+        usedBy: message.author.id,
+        commandId: dbCommand.id,
+      })
+      .then(() => {
+        console.log(`${command.name} - Command usage recorded`);
+      });
   }
 }
 
