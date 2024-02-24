@@ -88,7 +88,7 @@ export default class HappyClient {
       throw new Error("Command not found");
     }
 
-    this.commandsUsageRepo
+    await this.commandsUsageRepo
       .add({
         channelId: message.channel.id,
         guildId: message.guild?.id ?? "UNKNOWN",
