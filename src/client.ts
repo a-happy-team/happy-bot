@@ -15,15 +15,16 @@ type Event = keyof EventMap;
 
 export default class HappyClient {
   discordClient: Client;
-  commandsRepo = new CommandRepository(db);
-  commandsUsageRepo = new CommandUsageRepository(db);
 
   events: EventMap = {
     ready: [],
     messageCreate: [],
   };
 
-  constructor() {
+  constructor(
+    public readonly commandsRepo: CommandRepository,
+    public readonly commandsUsageRepo: CommandUsageRepository,
+  ) {
     this.discordClient = new Client({
       intents: [
         GatewayIntentBits.Guilds,

@@ -14,12 +14,17 @@ import SpotifyClient from "./modules/music/spotify";
 import YoutubeSource from "./modules/music/youtube";
 import Cron from "./services/cron";
 import { db } from "./services/database/connection";
+import CommandUsageRepository from "./services/database/repositories/command-usage.repository";
+import CommandRepository from "./services/database/repositories/command.repository";
 import SongPlayRepository from "./services/database/repositories/song-play.repository";
 import SongRepository from "./services/database/repositories/song.repository";
 
 const main = async () => {
   try {
-    const client = new HappyClient();
+    const commandsRepo = new CommandRepository(db);
+    const commandsUsageRepo = new CommandUsageRepository(db);
+
+    const client = new HappyClient(commandsRepo, commandsUsageRepo);
     const spotify = new SpotifyClient(
       process.env.SPOTIFY_CLIENT_ID as string,
       process.env.SPOTIFY_CLIENT_SECRET as string,
