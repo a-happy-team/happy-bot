@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { Message } from "discord.js";
 import Command from ".";
-import ConnectionManager from "../connection-manager";
+import ConnectionManager, { Connection } from "../connection-manager";
 import { Song } from "../modules/music/queue";
 import { SearchResult } from "../modules/music/youtube";
 import MessagesBank from "../services/message/message-embedder";
@@ -46,66 +46,50 @@ export default class P extends Command {
         adapterCreator: message.guild.voiceAdapterCreator,
       });
     }
+    connection.player.connect(connection?.voiceConnection);
 
     const [, search] = message.content.split("!p ");
 
-    connection.player.connect(connection?.voiceConnection);
+    const searchArguments = search.split(",").filter((arg) => arg.trim().length > 0);
 
-    let youtubeSearch: SearchResult | null = null;
+    if (searchArguments.length < 1) {
+      return message.channel.send({
+        embeds: [MessagesBank.error("Please provide a song name or a playlist URL.")],
+      });
+    }
 
-    const isPlaylist = connection.spotify.isPlaylistUrl(search);
+    const songs: Song[] = [];
 
-    if (isPlaylist) {
-      const tracks = await connection.spotify.getTracks(search);
+    for (let i = 0; i < searchArguments.length; i++) {
+      const songsResult = await this.songsExtractor(searchArguments[i], connection, message.author.id);
+      songs.push(...songsResult);
+      if (i === 0) {
+        const songToPlay = songs[0];
 
-      if (!tracks.length) {
-        return message.channel.send({
-          embeds: [MessagesBank.error("No playlist found.")],
+        const downloaded = await connection.youtube.download(message.guildId as string, songToPlay);
+
+        if (!downloaded) {
+          return message.channel.send({
+            embeds: [MessagesBank.error("This song is not available, sorry.")],
+          });
+        }
+
+        connection.queue.add([songToPlay]);
+        connection.player.play();
+
+        message.channel.send({
+          embeds: [MessagesBank.newSongAdded(songToPlay)],
         });
       }
-
-      youtubeSearch = (await Promise.all(tracks.map((track) => connection?.youtube.search({ search: track.title }))))
-        .flat()
-        .filter(Boolean) as SearchResult;
-    } else {
-      youtubeSearch = await connection.youtube.search({ search: search });
     }
 
-    if (!youtubeSearch?.length) {
+    if (songs.length === 0) {
       return message.channel.send({
-        embeds: [MessagesBank.error(isPlaylist ? "No songs found in the playlist." : "No songs found.")],
+        embeds: [MessagesBank.error("No songs found.")],
       });
     }
 
-    const songs: Song[] = youtubeSearch.map((song) => ({
-      title: song.title,
-      url: song.url,
-      duration: song.duration,
-      thumbnail: song.thumbnail,
-      requestedBy: message.author.id,
-      fileName: crypto.randomUUID(),
-      skipVotes: new Set(),
-    }));
-
-    const song = songs[0];
-
-    const downloaded = await connection.youtube.download(message.guildId as string, song);
-
-    if (!downloaded) {
-      return message.channel.send({
-        embeds: [
-          MessagesBank.error(isPlaylist ? "No songs found in the playlist." : "This song is not available, sorry."),
-        ],
-      });
-    }
-
-    connection.queue.add(songs);
-
-    connection.player.play();
-
-    return message.channel.send({
-      embeds: [MessagesBank.newSongAdded(song)],
-    });
+    connection.queue.add(songs.slice(1));
   }
 
   public validate(message: Message<boolean>): boolean {
@@ -119,5 +103,47 @@ export default class P extends Command {
     }
 
     return true;
+  }
+
+  public async songsExtractor(search: string, connection: Connection, authorId: string): Promise<Song[]> {
+    let youtubeSearch: SearchResult | null = null;
+
+    search.trim();
+
+    if (!search.length) {
+      return [];
+    }
+
+    const isPlaylist = connection.spotify.isPlaylistUrl(search);
+
+    if (isPlaylist) {
+      const tracks = await connection.spotify.getTracks(search);
+
+      if (!tracks.length) {
+        return [];
+      }
+
+      youtubeSearch = (await Promise.all(tracks.map((track) => connection?.youtube.search({ search: track.title }))))
+        .flat()
+        .filter(Boolean) as SearchResult;
+    } else {
+      youtubeSearch = await connection.youtube.search({ search: search });
+    }
+
+    if (!youtubeSearch?.length) {
+      return [];
+    }
+
+    const songs: Song[] = youtubeSearch.map((song) => ({
+      title: song.title,
+      url: song.url,
+      duration: song.duration,
+      thumbnail: song.thumbnail,
+      requestedBy: authorId,
+      fileName: crypto.randomUUID(),
+      skipVotes: new Set(),
+    }));
+
+    return songs;
   }
 }
