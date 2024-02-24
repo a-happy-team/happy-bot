@@ -83,7 +83,7 @@ export default class ConnectionManager {
   }
 }
 
-type Connection = {
+export type Connection = {
   voiceConnection: VoiceConnection;
   player: Player;
   queue: Queue;
