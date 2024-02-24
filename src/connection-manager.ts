@@ -4,10 +4,10 @@ import { Kysely } from "kysely";
 import { JoinVoiceChannelParams } from "./client";
 import Player from "./modules/music/player";
 import Queue from "./modules/music/queue";
-import SpotifyClient from "./modules/music/spotify";
-import YoutubeSource from "./modules/music/youtube";
 import SongPlayRepository from "./services/database/repositories/song-play.repository";
 import { DB } from "./services/database/types";
+import SpotifyClient from "./services/spotify";
+import YoutubeSource from "./services/youtube";
 
 export default class ConnectionManager {
   static instance: ConnectionManager;

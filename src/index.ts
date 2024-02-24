@@ -10,14 +10,14 @@ import Resume from "./commands/resume";
 import Skip from "./commands/skip";
 import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
-import SpotifyClient from "./modules/music/spotify";
-import YoutubeSource from "./modules/music/youtube";
 import Cron from "./services/cron";
 import { db } from "./services/database/connection";
 import CommandUsageRepository from "./services/database/repositories/command-usage.repository";
 import CommandRepository from "./services/database/repositories/command.repository";
 import SongPlayRepository from "./services/database/repositories/song-play.repository";
 import SongRepository from "./services/database/repositories/song.repository";
+import SpotifyClient from "./services/spotify";
+import YoutubeSource from "./services/youtube";
 
 const main = async () => {
   try {

@@ -13,8 +13,8 @@ import ConnectionManager from "../../connection-manager";
 import { SONGS_FOLDER } from "../../constants";
 import { Try } from "../../decorators/try";
 import SongPlayRepository from "../../services/database/repositories/song-play.repository";
+import YoutubeSource from "../../services/youtube";
 import Queue, { Song } from "./queue";
-import YoutubeSource from "./youtube";
 
 export default class Player {
   SONGS_FOLDER_PATH = "";

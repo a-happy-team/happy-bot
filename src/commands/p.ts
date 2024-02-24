@@ -3,8 +3,8 @@ import { Message } from "discord.js";
 import Command from ".";
 import ConnectionManager, { Connection } from "../connection-manager";
 import { Song } from "../modules/music/queue";
-import { SearchResult } from "../modules/music/youtube";
 import MessagesBank from "../services/message/message-embedder";
+import { SearchResult } from "../services/youtube";
 
 export default class P extends Command {
   name = "!p";

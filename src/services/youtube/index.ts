@@ -2,11 +2,11 @@ import fs from "fs";
 import path from "path";
 import ytdl from "@distube/ytdl-core";
 import * as YoutubeSR from "youtube-sr";
-import { SONGS_FOLDER } from "../../../constants";
-import { Try } from "../../../decorators/try";
-import SongRepository from "../../../services/database/repositories/song.repository";
-import OpenAI from "../../../services/open-ai";
-import { Song } from "../queue";
+import { SONGS_FOLDER } from "../../constants";
+import { Try } from "../../decorators/try";
+import { Song } from "../../modules/music/queue";
+import SongRepository from "../database/repositories/song.repository";
+import OpenAI from "../open-ai";
 import SpotifyClient from "../spotify";
 
 export type SearchParams = {
