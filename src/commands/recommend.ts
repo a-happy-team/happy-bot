@@ -1,7 +1,7 @@
 import { inject } from "@a-happy-team/dependo";
 import { Message } from "discord.js";
 import Command from ".";
-import ConnectionManager, { Connection } from "../connection-manager";
+import ConnectionManager from "../connection-manager";
 import SongPlayRepository from "../services/database/repositories/song-play.repository";
 import MessagesBank from "../services/message/message-embedder";
 import SpotifyClient from "../services/spotify";
@@ -38,7 +38,9 @@ export default class Recommend extends Command {
       limit: 10,
     });
 
-    const connection = this.connectionManager.getConnection(message) as Connection;
+    return message.channel.send({
+      embeds: [MessagesBank.success(recommendations.map((song) => song.title).join("\n"))],
+    });
   }
 
   validate(message: Message) {
