@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { inject } from "@a-happy-team/dependo";
 import ytdl from "@distube/ytdl-core";
 import * as YoutubeSR from "youtube-sr";
 import { SONGS_FOLDER } from "../../constants";
@@ -20,13 +21,11 @@ export type SearchResult = Array<{
   thumbnail: string;
 }>;
 export default class YoutubeSource {
+  @inject(SongRepository) songRepository: SongRepository;
   SONGS_FOLDER_PATH = path.join(SONGS_FOLDER);
   youtubeSearch: typeof YoutubeSR.YouTube;
 
-  constructor(
-    private readonly songRepository: SongRepository,
-    private readonly spotify: SpotifyClient,
-  ) {
+  constructor(private readonly spotify: SpotifyClient) {
     this.youtubeSearch = YoutubeSR.YouTube;
   }
 

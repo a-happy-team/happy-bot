@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { inject } from "@a-happy-team/dependo";
 import {
   AudioPlayer,
   NoSubscriberBehavior,
@@ -38,11 +39,11 @@ export default class Player {
 
   connection: VoiceConnection | null = null;
 
+  @inject(SongPlayRepository) songPlayRepository: SongPlayRepository;
   constructor(
     private readonly _queue: Queue,
     private readonly youtube: YoutubeSource,
     private readonly connectionManager: ConnectionManager,
-    private readonly songPlayRepository: SongPlayRepository,
   ) {
     this._player = createAudioPlayer({
       behaviors: {

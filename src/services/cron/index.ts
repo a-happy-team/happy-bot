@@ -1,3 +1,4 @@
+import { inject } from "@a-happy-team/dependo";
 import { CronJob } from "cron";
 import { Try } from "../../decorators/try";
 import SongPlayRepository from "../database/repositories/song-play.repository";
@@ -9,10 +10,8 @@ const CRON_SCHEDULES = {
 } as const;
 
 export default class Cron {
-  constructor(
-    private readonly songRepository: SongRepository,
-    private readonly songPlayRepository: SongPlayRepository,
-  ) {}
+  @inject(SongRepository) songRepository: SongRepository;
+  @inject(SongPlayRepository) songPlayRepository: SongPlayRepository;
 
   initialize() {
     this.schedule(CRON_SCHEDULES.EVERY_15_MINUTES, "Process Song Plays", this.processSongPlays.bind(this));

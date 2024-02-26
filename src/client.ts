@@ -1,8 +1,8 @@
+import { inject } from "@a-happy-team/dependo";
 import { DiscordGatewayAdapterCreator } from "@discordjs/voice";
 import { ActivityType, Client, GatewayIntentBits, Message } from "discord.js";
 import Command from "./commands";
 import { Try } from "./decorators/try";
-import { db } from "./services/database/connection";
 import CommandUsageRepository from "./services/database/repositories/command-usage.repository";
 import CommandRepository from "./services/database/repositories/command.repository";
 
@@ -14,6 +14,9 @@ type EventMap = {
 type Event = keyof EventMap;
 
 export default class HappyClient {
+  @inject(CommandRepository) commandsRepository: CommandRepository;
+  @inject(CommandUsageRepository) commandsUsageRepository: CommandUsageRepository;
+
   discordClient: Client;
 
   events: EventMap = {
@@ -21,10 +24,7 @@ export default class HappyClient {
     messageCreate: [],
   };
 
-  constructor(
-    public readonly commandsRepo: CommandRepository,
-    public readonly commandsUsageRepo: CommandUsageRepository,
-  ) {
+  constructor() {
     this.discordClient = new Client({
       intents: [
         GatewayIntentBits.Guilds,
@@ -79,8 +79,8 @@ export default class HappyClient {
     this.discordClient.login(process.env.BOT_TOKEN);
   }
 
-  @Try async recordCommandUsage(command: Command, message: Message) {
-    const dbCommand = await this.commandsRepo.findOrCreate({
+  @Try private async recordCommandUsage(command: Command, message: Message) {
+    const dbCommand = await this.commandsRepository.findOrCreate({
       name: command.name,
     });
 
@@ -88,7 +88,7 @@ export default class HappyClient {
       throw new Error("Command not found");
     }
 
-    await this.commandsUsageRepo
+    await this.commandsUsageRepository
       .add({
         channelId: message.channel.id,
         guildId: message.guild?.id ?? "UNKNOWN",

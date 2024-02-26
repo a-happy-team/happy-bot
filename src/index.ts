@@ -11,30 +11,20 @@ import Skip from "./commands/skip";
 import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
 import Cron from "./services/cron";
-import { db } from "./services/database/connection";
-import CommandUsageRepository from "./services/database/repositories/command-usage.repository";
-import CommandRepository from "./services/database/repositories/command.repository";
-import SongPlayRepository from "./services/database/repositories/song-play.repository";
-import SongRepository from "./services/database/repositories/song.repository";
 import SpotifyClient from "./services/spotify";
 import YoutubeSource from "./services/youtube";
 
 const main = async () => {
   try {
-    const commandsRepo = new CommandRepository(db);
-    const commandsUsageRepo = new CommandUsageRepository(db);
-
-    const client = new HappyClient(commandsRepo, commandsUsageRepo);
+    const client = new HappyClient();
     const spotify = new SpotifyClient(
       process.env.SPOTIFY_CLIENT_ID as string,
       process.env.SPOTIFY_CLIENT_SECRET as string,
     );
-    const songRepository = new SongRepository(db);
-    const songPlayRepository = new SongPlayRepository(db);
-    const youtube = new YoutubeSource(songRepository, spotify);
-    const cronJobs = new Cron(songRepository, songPlayRepository);
+    const youtube = new YoutubeSource(spotify);
+    const cronJobs = new Cron();
 
-    const connectionManager = ConnectionManager.getInstance(youtube, spotify, db);
+    const connectionManager = ConnectionManager.getInstance(youtube, spotify);
 
     const commands: Command[] = [
       new P(connectionManager),
