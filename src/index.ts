@@ -1,3 +1,4 @@
+import { container } from "@a-happy-team/dependo";
 import HappyClient from "./client";
 import Command from "./commands";
 import Clear from "./commands/clear";
@@ -11,11 +12,14 @@ import Skip from "./commands/skip";
 import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
 import Cron from "./services/cron";
+import { db } from "./services/database/connection";
 import SpotifyClient from "./services/spotify";
 import YoutubeSource from "./services/youtube";
 
 const main = async () => {
   try {
+    container.register("DB", db, true);
+
     const client = new HappyClient();
     const spotify = new SpotifyClient(
       process.env.SPOTIFY_CLIENT_ID as string,
