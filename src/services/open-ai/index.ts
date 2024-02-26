@@ -1,4 +1,7 @@
+import { injectable } from "@a-happy-team/dependo";
 import OpenAISDK from "openai";
+
+@injectable({ singleton: true })
 export default class OpenAI {
   client: OpenAISDK;
 

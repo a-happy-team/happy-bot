@@ -1,14 +1,16 @@
+import { injectable } from "@a-happy-team/dependo";
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 
+@injectable({ singleton: true })
 export default class SpotifyClient {
   bearerToken: string | null = null;
   spotifyApi: SpotifyApi;
 
-  constructor(
-    private readonly clientId: string,
-    private readonly clientSecret: string,
-  ) {
-    this.spotifyApi = SpotifyApi.withClientCredentials(this.clientId, this.clientSecret);
+  constructor() {
+    this.spotifyApi = SpotifyApi.withClientCredentials(
+      process.env.SPOTIFY_CLIENT_ID as string,
+      process.env.SPOTIFY_CLIENT_SECRET as string,
+    );
   }
 
   isPlaylistUrl(url: string): boolean {
@@ -52,14 +54,56 @@ export default class SpotifyClient {
       title: track.name,
       artist: artist.name,
       genre: artist.genres[0],
+      id: track.id,
     };
   }
+
+  async getRecommendations(params: GetRecommendationsParams): Promise<GetTracksReturn> {
+    const recommendations = await this.spotifyApi.recommendations.get({
+      seed_tracks: params.seeds.tracks,
+      limit: params.limit ?? 10,
+    });
+
+    return await Promise.all(
+      recommendations.tracks.map(async (track) => {
+        const artist = await this.spotifyApi.artists.get(track.artists[0].id);
+
+        return {
+          title: track.name,
+          artist: artist.name,
+          genre: artist.genres[0],
+          id: track.id,
+        };
+      }),
+    );
+  }
 }
+
+type GetRecommendationsParams = {
+  seeds: {
+    /**
+     * Genres available at https://api.spotify.com/v1/recommendations/available-genre-seeds
+     */
+    genres?: string[];
+
+    /**
+     * Spotify artist IDs
+     */
+    artists?: string[];
+
+    /**
+     * Spotify track IDs
+     */
+    tracks?: string[];
+  };
+  limit: 5 | 10 | 15 | 20;
+};
 
 type TrackInfo = {
   title: string;
   artist: string;
   genre: string;
+  id: string;
 };
 
 type GetTracksReturn = Array<{ title: string }>;

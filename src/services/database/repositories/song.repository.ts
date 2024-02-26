@@ -1,5 +1,5 @@
 import { inject, injectable } from "@a-happy-team/dependo";
-import { Insertable, Kysely } from "kysely";
+import { Insertable, Kysely, Updateable } from "kysely";
 import { Try } from "../../../decorators/try";
 import { DB, Songs } from "../types";
 
@@ -42,6 +42,17 @@ export default class SongRepository {
       .updateTable("songs")
       .set("playedCount", Number(song?.playedCount) + params.count)
       .where("id", "=", params.songId)
+      .execute();
+  }
+
+  @Try async update(id: string, song: Updateable<Songs>) {
+    return this.db
+      .updateTable("songs")
+      .set({
+        ...song,
+        genre: song.genre || "UNKNOWN",
+      })
+      .where("id", "=", id)
       .execute();
   }
 }

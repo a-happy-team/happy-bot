@@ -49,6 +49,7 @@ export interface Songs {
   id: Generated<string>;
   name: string;
   playedCount: Generated<Int8>;
+  spotifyTrackId: string;
   updatedAt: Generated<Timestamp>;
   url: string;
 }

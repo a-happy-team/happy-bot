@@ -61,7 +61,23 @@ export default class SongPlayRepository {
       .where("processedAt", "is", null)
       .execute();
   }
+
+  @Try async getTopSongs(params: GetTopSongsParams) {
+    return this.db
+      .selectFrom("songs")
+      .select(["songs.id", "songs.spotifyTrackId", this.db.fn.countAll().as("count")])
+      .innerJoin("songPlays", "songPlays.songId", "songs.id")
+      .where("requestedBy", "=", params.userId)
+      .groupBy(["songs.id", "songs.spotifyTrackId"])
+      .orderBy("count", "desc")
+      .limit(5)
+      .execute();
+  }
 }
+
+type GetTopSongsParams = {
+  userId: string;
+};
 
 type PaginationParams = {
   limit: number;

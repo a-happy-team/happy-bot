@@ -21,11 +21,8 @@ const main = async () => {
     container.register("DB", db, true);
 
     const client = new HappyClient();
-    const spotify = new SpotifyClient(
-      process.env.SPOTIFY_CLIENT_ID as string,
-      process.env.SPOTIFY_CLIENT_SECRET as string,
-    );
-    const youtube = new YoutubeSource(spotify);
+    const spotify = new SpotifyClient();
+    const youtube = new YoutubeSource();
     const cronJobs = new Cron();
 
     const connectionManager = ConnectionManager.getInstance(youtube, spotify);

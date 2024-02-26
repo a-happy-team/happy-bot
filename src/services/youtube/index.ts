@@ -22,10 +22,13 @@ export type SearchResult = Array<{
 }>;
 export default class YoutubeSource {
   @inject(SongRepository) songRepository: SongRepository;
+  @inject(OpenAI) openAI: OpenAI;
+  @inject(SpotifyClient) spotify: SpotifyClient;
+
   SONGS_FOLDER_PATH = path.join(SONGS_FOLDER);
   youtubeSearch: typeof YoutubeSR.YouTube;
 
-  constructor(private readonly spotify: SpotifyClient) {
+  constructor() {
     this.youtubeSearch = YoutubeSR.YouTube;
   }
 
@@ -102,7 +105,7 @@ export default class YoutubeSource {
       return;
     }
 
-    const isSameSong = await new OpenAI().isSameSong(title, trackInfo);
+    const isSameSong = await this.openAI.isSameSong(title, trackInfo);
 
     if (trackInfo && isSameSong) {
       this.songRepository.findOrCreate({
@@ -110,6 +113,7 @@ export default class YoutubeSource {
         artist: trackInfo.artist,
         genre: trackInfo.genre,
         url,
+        spotifyTrackId: trackInfo.id,
       });
     }
   }
