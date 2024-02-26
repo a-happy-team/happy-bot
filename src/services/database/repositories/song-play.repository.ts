@@ -1,9 +1,11 @@
+import { inject, injectable } from "@a-happy-team/dependo";
 import { Kysely } from "kysely";
 import { Try } from "../../../decorators/try";
 import { DB } from "../types";
 
+@injectable({ singleton: true })
 export default class SongPlayRepository {
-  constructor(private db: Kysely<DB>) {}
+  @inject("DB") db: Kysely<DB>;
 
   @Try async add(params: RecordPlayParams) {
     let songId: string | null = "songId" in params ? params.songId : null;

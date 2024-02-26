@@ -1,9 +1,11 @@
+import { inject, injectable } from "@a-happy-team/dependo";
 import { Insertable, Kysely } from "kysely";
 import { Try } from "../../../decorators/try";
 import { DB, Songs } from "../types";
 
+@injectable({ singleton: true })
 export default class SongRepository {
-  constructor(private db: Kysely<DB>) {}
+  @inject("DB") db: Kysely<DB>;
 
   @Try async insert(song: Insertable<Songs>) {
     return this.db
