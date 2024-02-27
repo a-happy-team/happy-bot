@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { inject } from "@a-happy-team/dependo";
+import { inject, injectable } from "@a-happy-team/dependo";
 import ytdl from "@distube/ytdl-core";
 import * as YoutubeSR from "youtube-sr";
 import { SONGS_FOLDER } from "../../constants";
@@ -20,6 +20,8 @@ export type SearchResult = Array<{
   duration: string;
   thumbnail: string;
 }>;
+
+@injectable({ singleton: true })
 export default class YoutubeSource {
   @inject(SongRepository) songRepository: SongRepository;
   @inject(OpenAI) openAI: OpenAI;
@@ -108,7 +110,7 @@ export default class YoutubeSource {
     const isSameSong = await this.openAI.isSameSong(title, trackInfo);
 
     if (trackInfo && isSameSong) {
-      this.songRepository.findOrCreate({
+      await this.songRepository.findOrCreate({
         name: trackInfo.title,
         artist: trackInfo.artist,
         genre: trackInfo.genre,

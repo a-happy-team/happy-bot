@@ -14,7 +14,7 @@ export default class SongPlayRepository {
       const song = await this.db.selectFrom("songs").where("url", "=", params.url).select("id").executeTakeFirst();
 
       if (!song) {
-        throw new Error("Song not found.");
+        return null;
       }
 
       songId = song.id;

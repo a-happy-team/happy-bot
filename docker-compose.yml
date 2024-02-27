@@ -11,6 +11,7 @@ services:
       - .env
     volumes:
       - .:/app
+      - ./songs:/tmp
     network_mode: "host"
     depends_on:
       - db
