@@ -9,6 +9,7 @@ import Pause from "./commands/pause";
 import QueueCommand from "./commands/queue";
 import Recommend from "./commands/recommend";
 import Resume from "./commands/resume";
+import Shuffle from "./commands/shuffle";
 import Skip from "./commands/skip";
 import Stop from "./commands/stop";
 import ConnectionManager from "./connection-manager";
@@ -39,6 +40,7 @@ const main = async () => {
       new Stop(connectionManager),
       new Commands(),
       new Recommend(connectionManager),
+      new Shuffle(connectionManager),
     ];
 
     commands.sort((a, b) => a.name.localeCompare(b.name));

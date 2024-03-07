@@ -192,6 +192,12 @@ export default class Player {
     }
   }
 
+  shuffle() {
+    this._queue.shuffle();
+
+    this.preloadNextSongs(2);
+  }
+
   /**
    * Downloads `count` songs from the queue.
    * It's safe to call this method multiple times, as it will only download the songs that are not already downloaded.
