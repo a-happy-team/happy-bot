@@ -50,6 +50,23 @@ export default class Queue {
     return this.currentSong?.skipVotes.size ?? 0;
   }
 
+  shuffle() {
+    if (this.songs.length === 0) return;
+
+    let currentIndex = this.songs.length;
+    let temporaryValue: Song;
+    let randomIndex: number;
+
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      temporaryValue = this.songs[currentIndex];
+      this.songs[currentIndex] = this.songs[randomIndex];
+      this.songs[randomIndex] = temporaryValue;
+    }
+  }
+
   alreadyVoted(userId: string) {
     return this.currentSong?.skipVotes.has(userId) ?? false;
   }
