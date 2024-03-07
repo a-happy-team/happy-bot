@@ -21,7 +21,7 @@ export default class OpenAI {
       messages: [
         {
           role: "user",
-          content: `Answer only with 0 for NO or 1 for YES with no dots. I'll provide a string containing a music title and an object containing song info. I need you to tell me if both info are referring to the same song or no.
+          content: `Are the provided music title and song info referring to the same song?
             
             ${title}
             ${songInfo ? JSON.stringify(songInfo, null, 2) : ""}
